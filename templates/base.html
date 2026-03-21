@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="light" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>{% block title %}Lumina Learning{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#d9dadb",
+                        "primary-container": "#4a6278",
+                        "primary-fixed-dim": "#b0c9e3",
+                        "on-tertiary-fixed-variant": "#43474b",
+                        "tertiary-container": "#5b6063",
+                        "surface-container": "#edeeef",
+                        "outline": "#73777d",
+                        "surface-container-high": "#e7e8e9",
+                        "tertiary": "#44484c",
+                        "primary": "#324a5f",
+                        "inverse-on-surface": "#f0f1f2",
+                        "tertiary-fixed-dim": "#c3c7cb",
+                        "inverse-primary": "#b0c9e3",
+                        "on-background": "#191c1d",
+                        "surface-tint": "#496177",
+                        "on-surface": "#191c1d",
+                        "secondary-fixed-dim": "#b5ccb9",
+                        "on-surface-variant": "#43474c",
+                        "background": "#f8f9fa",
+                        "on-error-container": "#93000a",
+                        "on-secondary-fixed": "#0b1f13",
+                        "surface-container-low": "#f3f4f5",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#cce5ff",
+                        "surface-bright": "#f8f9fa",
+                        "on-tertiary-container": "#d6dbdf",
+                        "on-secondary-container": "#546a59",
+                        "secondary-container": "#d0e9d4",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#4e6354",
+                        "on-primary-container": "#c4ddf7",
+                        "outline-variant": "#c3c7cd",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#e1e3e4",
+                        "surface-container-highest": "#e1e3e4",
+                        "inverse-surface": "#2e3132",
+                        "secondary-fixed": "#d0e9d4",
+                        "on-primary-fixed-variant": "#31495e",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#171c1f",
+                        "surface": "#f8f9fa",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#374c3d",
+                        "on-primary-fixed": "#011d31",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#dfe3e7"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope", "sans-serif"],
+                        "body": ["Inter", "sans-serif"],
+                        "label": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-surface font-body text-on-surface antialiased no-scrollbar">
+    <aside class="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-transparent bg-[#F8F9FA] px-4 py-8">
+        <div class="mb-10 px-4">
+            <h1 class="font-headline text-lg font-black tracking-tight text-[#324A5F]">Lumina</h1>
+            <p class="text-secondary text-[0.6875rem] font-bold uppercase tracking-widest opacity-70">
+                AI Knowledge Base
+            </p>
+        </div>
+
+        <div class="mb-8 px-2">
+            <button class="flex w-full items-center justify-center gap-2 rounded-full bg-primary px-4 py-3 font-headline font-bold text-on-primary transition-all duration-300 hover:shadow-lg active:scale-95">
+                <span class="material-symbols-outlined text-sm">add</span>
+                <span>New Topic</span>
+            </button>
+        </div>
+
+        <nav class="flex-1 space-y-1">
+            <a
+                href="{{ url_for('home') }}"
+                class="flex items-center gap-3 px-4 py-3 text-[0.875rem] font-semibold transition-all duration-300 ease-in-out {% if active_page == 'topics' %}border-r-4 border-[#324A5F] bg-white/50 text-[#324A5F]{% else %}text-[#44484C] hover:bg-[#E7E8E9] hover:text-[#324A5F]{% endif %}"
+            >
+                <span class="material-symbols-outlined">folder_open</span>
+                <span>My Topics</span>
+            </a>
+
+            <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3 text-[0.875rem] text-[#44484C] transition-all duration-300 ease-in-out hover:bg-[#E7E8E9] hover:text-[#324A5F]"
+            >
+                <span class="material-symbols-outlined">history</span>
+                <span>Recent Materials</span>
+            </a>
+
+            <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3 text-[0.875rem] text-[#44484C] transition-all duration-300 ease-in-out hover:bg-[#E7E8E9] hover:text-[#324A5F]"
+            >
+                <span class="material-symbols-outlined">search</span>
+                <span>Search</span>
+            </a>
+
+            <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-3 text-[0.875rem] text-[#44484C] transition-all duration-300 ease-in-out hover:bg-[#E7E8E9] hover:text-[#324A5F]"
+            >
+                <span class="material-symbols-outlined">settings</span>
+                <span>Settings</span>
+            </a>
+        </nav>
+
+        <div class="mt-auto space-y-1 border-t border-surface-container-high pt-8">
+            <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-2 text-[0.875rem] text-[#44484C] transition-all duration-300 ease-in-out hover:text-[#324A5F]"
+            >
+                <span class="material-symbols-outlined">help</span>
+                <span>Help Center</span>
+            </a>
+
+            <a
+                href="#"
+                class="flex items-center gap-3 px-4 py-2 text-[0.875rem] text-[#44484C] transition-all duration-300 ease-in-out hover:text-[#324A5F]"
+            >
+                <span class="material-symbols-outlined">logout</span>
+                <span>Log Out</span>
+            </a>
+        </div>
+    </aside>
+
+    <main class="ml-64 flex min-h-screen flex-col">
+        <header class="sticky top-0 z-40 flex h-16 w-full items-center justify-between border-none bg-[#F8F9FA] px-8">
+            <div class="flex flex-1 items-center gap-4">
+                <div class="relative w-full max-w-md">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-sm text-on-surface-variant">
+                        search
+                    </span>
+                    <input
+                        class="w-full rounded-full border-none bg-surface-container-highest py-2 pl-10 pr-4 text-sm outline-none transition-all focus:ring-2 focus:ring-primary"
+                        placeholder="Search your knowledge base..."
+                        type="text"
+                    />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <button class="rounded-full p-2 text-[#44484C] transition-colors duration-200 hover:bg-[#E7E8E9] active:scale-95">
+                        <span class="material-symbols-outlined">notifications</span>
+                    </button>
+                    <button class="rounded-full p-2 text-[#44484C] transition-colors duration-200 hover:bg-[#E7E8E9] active:scale-95">
+                        <span class="material-symbols-outlined">help</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3 border-l border-surface-container-high pl-6">
+                    <div class="text-right">
+                        <p class="font-headline text-xs font-bold text-primary">Julian Scholar</p>
+                        <p class="text-[10px] text-secondary">Premium Plan</p>
+                    </div>
+                    <img
+                        alt="User profile avatar"
+                        class="h-10 w-10 rounded-full border-2 border-surface-container-lowest object-cover shadow-sm"
+                        src="https://lh3.googleusercontent.com/aida-public/AB6AXuDw5JjOqTFcSOYr1MFuk-WYPqiznl0NN95ZDfzvqCgRPS8mKpR1QXtaZBKIjbRk-Z4TaRVQXQGFrAb6LR9WLn8lP87Eayo8YK4zj7ZwrLyPUlWjljd05-lDC4wI_Q-PHgv-PWFXGPYsX7tUfZSbdSdP-Ht4pJPH8wK-SJak5YlprI0md9-v37eHXfvCW4EwyirKl2JJvIAxClnbTgn2nNsYDaN8kJkdeS6rBFCDxZaKpn2XW3WsI3WnrmQI9_q-gr67w0NtOxnGwvJO"
+                    />
+                </div>
+            </div>
+        </header>
+
+        {% block content %}{% endblock %}
+    </main>
+
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
