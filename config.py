@@ -1,12 +1,7 @@
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+
 
 class Config:
-    SQLALCHEMY_DATABASE_URI = os.getenv(
-        "DATABASE_URL",
-        "postgresql://postgres:password@localhost:5432/studyapp"
-    )
+    SQLALCHEMY_DATABASE_URI = "postgresql://lumina_user:lumina_pass@localhost:5433/lumina_db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+    OPENAI_API_KEY = ""
