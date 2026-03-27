@@ -1,0 +1,65 @@
+:root {
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  color: #111827;
+  background: #f3f4f6;
+}
+
+body {
+  margin: 0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.card {
+  background: white;
+  border-radius: 10px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+form {
+  display: grid;
+  gap: 8px;
+}
+
+input,
+textarea,
+button {
+  padding: 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: #111827;
+  color: white;
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.topic {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.topic.active {
+  background: #111827;
+  color: white;
+}
+
+pre {
+  white-space: pre-wrap;
+  background: #f9fafb;
+  padding: 12px;
+  border-radius: 8px;
+}
