@@ -1,69 +1,101 @@
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from flask import Flask, redirect, render_template, request, url_for
 
-from . import crud, models, schemas
-from .database import Base, engine, get_db
+from .database import Base, SessionLocal, engine
+from .models import Topic, Material
 from .services.openai_service import get_answer
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Lumina API")
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app = Flask(__name__)
 
 
-@app.get("/health")
-def health_check():
-    return {"status": "ok"}
+def _parse_topic_id(value: str | None) -> int | None:
+    if not value:
+        return None
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 
-@app.get("/topics", response_model=list[schemas.TopicRead])
-def list_topics(db: Session = Depends(get_db)):
-    return crud.get_topics(db)
+@app.get("/")
+def index():
+    selected_topic_id = _parse_topic_id(request.args.get("topic_id"))
+    answer = request.args.get("answer", "")
+
+    with SessionLocal() as db:
+        topics = db.query(Topic).order_by(Topic.created_at.desc()).all()
+
+        if selected_topic_id is None and topics:
+            selected_topic_id = topics[0].id
+
+        selected_topic = None
+        materials: list[Material] = []
+        if selected_topic_id is not None:
+            selected_topic = db.query(Topic).filter(Topic.id == selected_topic_id).first()
+            if selected_topic:
+                materials = db.query(Material).filter(Material.topic_id == selected_topic_id).all()
+
+    return render_template(
+        "index.html",
+        topics=topics,
+        selected_topic_id=selected_topic_id,
+        selected_topic=selected_topic,
+        materials=materials,
+        answer=answer,
+    )
 
 
-@app.post("/topics", response_model=schemas.TopicRead)
-def create_topic(topic_in: schemas.TopicCreate, db: Session = Depends(get_db)):
-    return crud.create_topic(db, topic_in)
+@app.post("/topics")
+def create_topic():
+    title = request.form.get("title", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if title:
+        with SessionLocal() as db:
+            topic = Topic(title=title, description=description)
+            db.add(topic)
+            db.commit()
+            db.refresh(topic)
+            return redirect(url_for("index", topic_id=topic.id))
+
+    return redirect(url_for("index"))
 
 
-@app.delete("/topics/{topic_id}")
-def remove_topic(topic_id: int, db: Session = Depends(get_db)):
-    if not crud.delete_topic(db, topic_id):
-        raise HTTPException(status_code=404, detail="Topic not found")
-    return {"ok": True}
+@app.post("/materials")
+def create_material():
+    topic_id = _parse_topic_id(request.form.get("topic_id"))
+    title = request.form.get("title", "").strip()
+    content = request.form.get("content", "").strip()
+
+    if topic_id and title and content:
+        with SessionLocal() as db:
+            topic = db.query(Topic).filter(Topic.id == topic_id).first()
+            if topic:
+                material = Material(topic_id=topic_id, title=title, content=content)
+                db.add(material)
+                db.commit()
+
+    return redirect(url_for("index", topic_id=topic_id))
 
 
-@app.get("/topics/{topic_id}/materials", response_model=list[schemas.MaterialRead])
-def list_materials(topic_id: int, db: Session = Depends(get_db)):
-    topic = crud.get_topic(db, topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail="Topic not found")
-    return crud.get_materials(db, topic_id)
+@app.post("/ask")
+def ask_question():
+    topic_id = _parse_topic_id(request.form.get("topic_id"))
+    question = request.form.get("question", "").strip()
+
+    if not topic_id or not question:
+        return redirect(url_for("index", topic_id=topic_id))
+
+    with SessionLocal() as db:
+        topic = db.query(Topic).filter(Topic.id == topic_id).first()
+        if not topic:
+            return redirect(url_for("index"))
+        materials = db.query(Material).filter(Material.topic_id == topic_id).all()
+        answer = get_answer(topic.title, materials, question)
+
+    return redirect(url_for("index", topic_id=topic_id, answer=answer))
 
 
-@app.post("/topics/{topic_id}/materials", response_model=schemas.MaterialRead)
-def create_material(topic_id: int, material_in: schemas.MaterialCreate, db: Session = Depends(get_db)):
-    topic = crud.get_topic(db, topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail="Topic not found")
-    return crud.create_material(db, topic_id, material_in)
-
-
-@app.post("/topics/{topic_id}/ask", response_model=schemas.AskResponse)
-def ask_question(topic_id: int, ask_in: schemas.AskRequest, db: Session = Depends(get_db)):
-    topic = crud.get_topic(db, topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail="Topic not found")
-
-    materials = crud.get_materials(db, topic_id)
-    answer = get_answer(topic.title, materials, ask_in.question)
-    crud.add_chat_history(db, topic_id, ask_in.question, answer)
-    return {"answer": answer}
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000, debug=True)

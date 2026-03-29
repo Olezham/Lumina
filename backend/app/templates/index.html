@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lumina</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>Lumina</h1>
+      <p>Flask + raw HTML</p>
+
+      <section class="card">
+        <h2>Create topic</h2>
+        <form method="post" action="{{ url_for('create_topic') }}">
+          <input name="title" placeholder="Topic title" required />
+          <textarea name="description" placeholder="Description"></textarea>
+          <button type="submit">Create topic</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Topics</h2>
+        <div class="row">
+          {% for topic in topics %}
+          <a
+            href="{{ url_for('index', topic_id=topic.id) }}"
+            class="topic {% if selected_topic_id == topic.id %}active{% endif %}"
+          >
+            {{ topic.title }}
+          </a>
+          {% endfor %}
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Add material</h2>
+        <form method="post" action="{{ url_for('create_material') }}">
+          <input type="hidden" name="topic_id" value="{{ selected_topic_id or '' }}" />
+          <input name="title" placeholder="Material title" required {% if not selected_topic_id %}disabled{% endif %} />
+          <textarea name="content" placeholder="Material content" required {% if not selected_topic_id %}disabled{% endif %}></textarea>
+          <button type="submit" {% if not selected_topic_id %}disabled{% endif %}>Add material</button>
+        </form>
+
+        <ul>
+          {% for material in materials %}
+          <li><strong>{{ material.title }}:</strong> {{ material.content }}</li>
+          {% endfor %}
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>Ask question</h2>
+        <form method="post" action="{{ url_for('ask_question') }}">
+          <input type="hidden" name="topic_id" value="{{ selected_topic_id or '' }}" />
+          <input name="question" placeholder="Ask about materials" required {% if not selected_topic_id %}disabled{% endif %} />
+          <button type="submit" {% if not selected_topic_id %}disabled{% endif %}>Ask</button>
+        </form>
+        {% if answer %}
+        <pre>{{ answer }}</pre>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
