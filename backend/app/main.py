@@ -1,69 +1,109 @@
-from fastapi import Depends, FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.orm import Session
+from flask import Flask, redirect, render_template, request, url_for
 
-from . import crud, models, schemas
-from .database import Base, engine, get_db
+from . import crud
+from .database import Base, SessionLocal, engine
 from .services.openai_service import get_answer
 
+# Готовим таблицы при запуске приложения.
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Lumina API")
+app = Flask(__name__)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+
+# Определяет активную тему: из query-параметра или первую в списке.
+def pick_active_topic_id(topics: list, requested_topic_id: int | None) -> int | None:
+    if not topics:
+        return None
+    if requested_topic_id and any(topic.id == requested_topic_id for topic in topics):
+        return requested_topic_id
+    return topics[0].id
+
+
+@app.get("/")
+def index():
+    # Главная страница: темы + материалы выбранной темы.
+    requested_topic_id = request.args.get("topic_id", type=int)
+
+    with SessionLocal() as db:
+        topics = crud.get_topics(db)
+        active_topic_id = pick_active_topic_id(topics, requested_topic_id)
+        materials = crud.get_materials(db, active_topic_id) if active_topic_id else []
+
+    return render_template(
+        "index.html",
+        topics=topics,
+        active_topic_id=active_topic_id,
+        materials=materials,
+        answer="",
+        question="",
+    )
+
+
+@app.post("/topics")
+def create_topic():
+    # Создание новой темы из формы.
+    title = request.form.get("title", "").strip()
+    description = request.form.get("description", "").strip()
+
+    if not title:
+        return redirect(url_for("index"))
+
+    with SessionLocal() as db:
+        topic = crud.create_topic(db, title=title, description=description)
+
+    return redirect(url_for("index", topic_id=topic.id))
+
+
+@app.post("/materials")
+def create_material():
+    # Добавление материала в выбранную тему.
+    topic_id = request.form.get("topic_id", type=int)
+    title = request.form.get("title", "").strip()
+    content = request.form.get("content", "").strip()
+
+    if not topic_id or not title or not content:
+        return redirect(url_for("index", topic_id=topic_id))
+
+    with SessionLocal() as db:
+        if crud.get_topic(db, topic_id):
+            crud.create_material(db, topic_id=topic_id, title=title, content=content)
+
+    return redirect(url_for("index", topic_id=topic_id))
+
+
+@app.post("/ask")
+def ask_question():
+    # Генерация ответа по материалам выбранной темы.
+    topic_id = request.form.get("topic_id", type=int)
+    question = request.form.get("question", "").strip()
+
+    with SessionLocal() as db:
+        topics = crud.get_topics(db)
+        active_topic_id = pick_active_topic_id(topics, topic_id)
+        materials = crud.get_materials(db, active_topic_id) if active_topic_id else []
+
+        answer = ""
+        if active_topic_id and question:
+            topic = crud.get_topic(db, active_topic_id)
+            if topic:
+                answer = get_answer(topic.title, materials, question)
+                crud.add_chat_history(db, active_topic_id, question, answer)
+
+    return render_template(
+        "index.html",
+        topics=topics,
+        active_topic_id=active_topic_id,
+        materials=materials,
+        answer=answer,
+        question=question,
+    )
 
 
 @app.get("/health")
 def health_check():
+    # Простой health-check для контейнера/мониторинга.
     return {"status": "ok"}
 
 
-@app.get("/topics", response_model=list[schemas.TopicRead])
-def list_topics(db: Session = Depends(get_db)):
-    return crud.get_topics(db)
-
-
-@app.post("/topics", response_model=schemas.TopicRead)
-def create_topic(topic_in: schemas.TopicCreate, db: Session = Depends(get_db)):
-    return crud.create_topic(db, topic_in)
-
-
-@app.delete("/topics/{topic_id}")
-def remove_topic(topic_id: int, db: Session = Depends(get_db)):
-    if not crud.delete_topic(db, topic_id):
-        raise HTTPException(status_code=404, detail="Topic not found")
-    return {"ok": True}
-
-
-@app.get("/topics/{topic_id}/materials", response_model=list[schemas.MaterialRead])
-def list_materials(topic_id: int, db: Session = Depends(get_db)):
-    topic = crud.get_topic(db, topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail="Topic not found")
-    return crud.get_materials(db, topic_id)
-
-
-@app.post("/topics/{topic_id}/materials", response_model=schemas.MaterialRead)
-def create_material(topic_id: int, material_in: schemas.MaterialCreate, db: Session = Depends(get_db)):
-    topic = crud.get_topic(db, topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail="Topic not found")
-    return crud.create_material(db, topic_id, material_in)
-
-
-@app.post("/topics/{topic_id}/ask", response_model=schemas.AskResponse)
-def ask_question(topic_id: int, ask_in: schemas.AskRequest, db: Session = Depends(get_db)):
-    topic = crud.get_topic(db, topic_id)
-    if not topic:
-        raise HTTPException(status_code=404, detail="Topic not found")
-
-    materials = crud.get_materials(db, topic_id)
-    answer = get_answer(topic.title, materials, ask_in.question)
-    crud.add_chat_history(db, topic_id, ask_in.question, answer)
-    return {"answer": answer}
+if __name__ == "__main__":
+    app.run(debug=True)

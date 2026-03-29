@@ -1,37 +1,24 @@
-# Lumina (Split frontend/backend)
+# Lumina (Flask + raw HTML)
 
 Simple project structure:
 
-- `backend/` — FastAPI API service
-- `frontend/` — React.js app (Vite)
+- `backend/` — Flask app (renders HTML)
+- `frontend/` — old React app (kept for reference, no longer required)
 
-## Backend (FastAPI)
+## Backend (Flask)
 
 ```bash
 cd backend
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+python -m app.main
 ```
 
 Optional environment variables:
 
 - `DATABASE_URL` (default: `sqlite:///./lumina.db`)
 - `OPENAI_API_KEY` for AI answers
-
-## Frontend (React)
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Optional env var for API URL:
-
-- `VITE_API_URL` (default: `http://127.0.0.1:8000`)
-
 
 ## Docker Compose
 
