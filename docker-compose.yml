@@ -22,7 +22,7 @@ services:
       DATABASE_URL: postgresql://lumina_user:lumina_pass@postgres:5432/lumina_db
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     ports:
-      - "8000:8000"
+      - "8000:5000"
     depends_on:
       - postgres
 

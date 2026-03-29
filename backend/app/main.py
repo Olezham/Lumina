@@ -4,6 +4,7 @@ from .database import Base, SessionLocal, engine
 from .models import Topic, Material
 from .services.openai_service import get_answer
 
+# Готовим таблицы при запуске приложения.
 Base.metadata.create_all(bind=engine)
 
 app = Flask(__name__)
