@@ -1,7 +1,7 @@
 from flask import Flask, redirect, render_template, request, url_for
 
-from . import crud
 from .database import Base, SessionLocal, engine
+from .models import Topic, Material
 from .services.openai_service import get_answer
 
 # Готовим таблицы при запуске приложения.
@@ -70,6 +70,7 @@ def create_material():
 
     return redirect(url_for("index", topic_id=topic_id))
 
+    return redirect(url_for("index"))
 
 @app.post("/ask")
 def ask_question():
