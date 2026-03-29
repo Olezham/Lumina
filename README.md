@@ -1,11 +1,8 @@
-# Lumina (Flask + raw HTML)
+# Lumina (Simple Flask app)
 
-Simple project structure:
+Lumina is now a single Flask application with server-rendered HTML (no separate React frontend).
 
-- `backend/` — Flask app (renders HTML)
-- `frontend/` — old React app (kept for reference, no longer required)
-
-## Backend (Flask)
+## Run locally
 
 ```bash
 cd backend
@@ -15,6 +12,8 @@ pip install -r requirements.txt
 python -m app.main
 ```
 
+Then open `http://127.0.0.1:8000`.
+
 Optional environment variables:
 
 - `DATABASE_URL` (default: `sqlite:///./lumina.db`)
@@ -22,7 +21,7 @@ Optional environment variables:
 
 ## Docker Compose
 
-For Docker setup, only `OPENAI_API_KEY` is read from `.env` and passed to the backend.
+For Docker setup, only `OPENAI_API_KEY` is read from `.env` and passed to the app.
 
 ```bash
 cp .env.example .env
