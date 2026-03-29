@@ -31,3 +31,14 @@ npm run dev
 Optional env var for API URL:
 
 - `VITE_API_URL` (default: `http://127.0.0.1:8000`)
+
+
+## Docker Compose
+
+For Docker setup, only `OPENAI_API_KEY` is read from `.env` and passed to the backend.
+
+```bash
+cp .env.example .env
+# then put your real key into .env
+docker compose up --build
+```
