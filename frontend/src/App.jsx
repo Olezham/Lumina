@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { askQuestion, createMaterial, createTopic, getMaterials, getTopics } from "./api";
 import "./styles.css";
 
