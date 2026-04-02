@@ -1,7 +1,8 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
+from .auth import check_existing_user, create_user, authenticate_user, login_user, get_current_user
 from . import crud, models, schemas
 from .database import Base, engine, get_db
 from .services.openai_service import get_answer
@@ -67,3 +68,35 @@ def ask_question(topic_id: int, ask_in: schemas.AskRequest, db: Session = Depend
     answer = get_answer(topic.title, materials, ask_in.question)
     crud.add_chat_history(db, topic_id, ask_in.question, answer)
     return {"answer": answer}
+
+
+@app.post("/register")
+def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = check_existing_user(db,email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Username already registered")
+    return create_user(db=db, user=user)
+
+
+@app.post("/login")
+def login(creds: schemas.UserLogin, response: Response, db: Session = Depends(get_db)):
+    user = authenticate_user(creds.email, creds.password, db)
+    if user:
+        
+        token = login_user(user.id)
+        print(f"Generated token for user {user.id}: {token}")  # Debug log
+        response.set_cookie(
+        key="auth_token",
+        value=token,
+        httponly=True,  # Prevents JavaScript access (XSS protection)
+        secure=False,  # Send only over HTTPS (set False for local dev)
+        samesite="Strict"  # CSRF protection
+    )   
+        return {"message": "Login successful"}
+        
+    return HTTPException(status_code=401, detail="Invalid credentials")
+
+@app.get('/protected')
+def protected(user=Depends(get_current_user)):
+
+    return {"message": "This is a protected route"}

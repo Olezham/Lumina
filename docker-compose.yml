@@ -12,6 +12,13 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis:7-alpine
+    container_name: lumina_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
   backend:
     image: python:3.12-slim
     working_dir: /app
@@ -20,11 +27,13 @@ services:
     command: sh -c "pip install -r requirements.txt && uvicorn app.main:app --host 0.0.0.0 --port 8000"
     environment:
       DATABASE_URL: postgresql://lumina_user:lumina_pass@postgres:5432/lumina_db
+      REDIS_URL: ${REDIS_URL}
       OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     ports:
       - "8000:8000"
     depends_on:
       - postgres
+      - redis
 
   frontend:
     image: node:20-alpine

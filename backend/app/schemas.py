@@ -45,3 +45,14 @@ class AskRequest(BaseModel):
 
 class AskResponse(BaseModel):
     answer: str
+
+
+class UserCredentials(BaseModel):
+    email: str
+    password: str
+
+class UserCreate(UserCredentials):
+    pass 
+
+class UserLogin(UserCredentials):
+    pass
