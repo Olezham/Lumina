@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { askQuestion, createMaterial, createTopic, getMaterials, getTopics } from "./api";
+import {
+  askQuestion,
+  createMaterial,
+  createTopic,
+  getMaterials,
+  getTopics,
+} from "./api";
 import "./styles.css";
 
 export default function App() {
@@ -45,7 +51,12 @@ export default function App() {
 
   async function handleCreateMaterial(event) {
     event.preventDefault();
-    if (!selectedTopicId || !newMaterial.title.trim() || !newMaterial.content.trim()) return;
+    if (
+      !selectedTopicId ||
+      !newMaterial.title.trim() ||
+      !newMaterial.content.trim()
+    )
+      return;
     await createMaterial(selectedTopicId, newMaterial);
     setNewMaterial({ title: "", content: "" });
     await loadMaterials(selectedTopicId);
@@ -69,12 +80,16 @@ export default function App() {
           <input
             placeholder="Topic title"
             value={newTopic.title}
-            onChange={(e) => setNewTopic((s) => ({ ...s, title: e.target.value }))}
+            onChange={(e) =>
+              setNewTopic((s) => ({ ...s, title: e.target.value }))
+            }
           />
           <textarea
             placeholder="Description"
             value={newTopic.description}
-            onChange={(e) => setNewTopic((s) => ({ ...s, description: e.target.value }))}
+            onChange={(e) =>
+              setNewTopic((s) => ({ ...s, description: e.target.value }))
+            }
           />
           <button type="submit">Create topic</button>
         </form>
@@ -86,7 +101,9 @@ export default function App() {
           {topics.map((topic) => (
             <button
               key={topic.id}
-              className={selectedTopicId === topic.id ? "topic active" : "topic"}
+              className={
+                selectedTopicId === topic.id ? "topic active" : "topic"
+              }
               onClick={() => setSelectedTopicId(topic.id)}
             >
               {topic.title}
@@ -101,12 +118,16 @@ export default function App() {
           <input
             placeholder="Material title"
             value={newMaterial.title}
-            onChange={(e) => setNewMaterial((s) => ({ ...s, title: e.target.value }))}
+            onChange={(e) =>
+              setNewMaterial((s) => ({ ...s, title: e.target.value }))
+            }
           />
           <textarea
             placeholder="Material content"
             value={newMaterial.content}
-            onChange={(e) => setNewMaterial((s) => ({ ...s, content: e.target.value }))}
+            onChange={(e) =>
+              setNewMaterial((s) => ({ ...s, content: e.target.value }))
+            }
           />
           <button type="submit" disabled={!selectedTopicId}>
             Add material
@@ -125,8 +146,14 @@ export default function App() {
       <section className="card">
         <h2>Ask question</h2>
         <form onSubmit={handleAsk}>
-          <input value={question} onChange={(e) => setQuestion(e.target.value)} placeholder="Ask about materials" />
-          <button type="submit" disabled={!selectedTopicId}>Ask</button>
+          <input
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Ask about materials"
+          />
+          <button type="submit" disabled={!selectedTopicId}>
+            Ask
+          </button>
         </form>
         {answer && <pre>{answer}</pre>}
       </section>
