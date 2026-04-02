@@ -1,0 +1,209 @@
+@use '../../styles/variables' as *;
+
+.page {
+  min-height: 100vh;
+  background-color: $color-bg;
+  display: flex;
+  flex-direction: column;
+  font-family: "Plus Jakarta Sans", sans-serif;
+}
+
+// NAVBAR
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 64px;
+  background-color: $color-white;
+  border-bottom: 1px solid $color-border;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.logoTitle {
+  font-size: 25px;
+  font-weight: 700;
+  color: $color-text-main;
+  line-height: 1.2;
+}
+
+.logoSub {
+  font-size: 10px;
+  font-weight: 500;
+  color: $color-text-sub;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.navActions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+// HERO
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 72px 24px 60px;
+}
+
+.heroBadge {
+  display: inline-block;
+  background-color: $color-tag-green-bg;
+  color: $color-tag-green-text;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 999px;
+  margin-bottom: 28px;
+}
+
+.heroTitle {
+  font-size: 52px;
+  font-weight: 700;
+  color: $color-text-main;
+  line-height: 1.15;
+  margin-bottom: 20px;
+
+  @media (max-width: 600px) {
+    font-size: 32px;
+  }
+}
+
+.heroTitleAccent {
+  color: $color-accent;
+}
+
+.heroSub {
+  font-size: 17px;
+  color: $color-text-sub;
+  line-height: 1.6;
+  margin-bottom: 36px;
+  max-width: 480px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 64px;
+}
+
+// CARDS
+.cards {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.card {
+  background-color: $color-white;
+  border: 1px solid $color-border;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 200px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.15s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.cardIcon {
+  font-size: 24px;
+  line-height: 1;
+}
+
+.cardText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  text-align: left;
+}
+
+.cardTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: $color-text-main;
+}
+
+.cardSub {
+  font-size: 12px;
+  color: $color-text-sub;
+}
+
+.cardArrow {
+  font-size: 20px;
+  color: $color-text-muted;
+
+  @media (max-width: 600px) {
+    display: none;
+  }
+}
+
+// BUTTONS
+.btnPrimary {
+  background-color: $color-primary;
+  color: $color-white;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: $color-primary-hover;
+  }
+}
+
+.btnGhost {
+  background-color: transparent;
+  color: $color-primary;
+  border: 1.5px solid $color-border-soft;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background-color: $color-border;
+    border-color: $color-border;
+  }
+}
+
+// FOOTER
+.footer {
+  padding: 20px 40px;
+  background-color: $color-footer-bg;
+  border-top: 1px solid $color-border-soft;
+  text-align: center;
+  font-size: 13px;
+  color: $color-text-sub;
+}
