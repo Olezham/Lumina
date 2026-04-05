@@ -1,0 +1,95 @@
+.formContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0;
+  min-height: 100vh;
+}
+
+.formCard {
+  background-color: black;
+  border-radius: 16px;
+  padding: 3rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.formTitle {
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.formP {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #6c757d;
+}
+
+.inputEmail {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 2rem;
+  border: 1px solid white;
+  border-radius: 16px;
+  color: #ffffff;
+  font-size: 16px;
+  outline: none;
+}
+
+.inputPassword {
+  width: 100%;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid white;
+  border-radius: 16px;
+  font-size: 16px;
+  color: #ffffff;
+  outline: none;
+}
+
+.forgotPassword {
+  display: block;
+  text-align: left;
+  color: gray;
+  font-size: 14px;
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.loginButton {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid white;
+  border-radius: 16px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: transparent;
+  color: rgba(235, 233, 252, 1);
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+
+  &:hover {
+    background-color: #333333;
+  }
+}
+
+.signupText {
+  text-align: center;
+  font-size: 14px;
+  color: #6c757d;
+
+  .signupLink {
+    color: white;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+}

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./WelcomePage.module.scss";
 
-export default function WelcomePage() {
+const WelcomePage = () => {
   const navigate = useNavigate();
 
   return (
@@ -89,4 +89,6 @@ export default function WelcomePage() {
       </footer>
     </div>
   );
-}
+};
+
+export default WelcomePage;

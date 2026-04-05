@@ -1,9 +1,9 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import WelcomePage from "./pages/WelcomePage/WelcomePage";
+import WelcomePage from "@/components/pages/WelcomePage/WelcomePage";
 // import DashboardPage from "./pages/DashboardPage";
 
-export default function App() {
+const App = () => {
   return (
     <Routes>
       <Route path="/" element={<WelcomePage />} />
@@ -11,4 +11,6 @@ export default function App() {
       {/* Это прошлый App.jsx с использыванием api ( api буду переписывать) */}
     </Routes>
   );
-}
+};
+
+export default App;
