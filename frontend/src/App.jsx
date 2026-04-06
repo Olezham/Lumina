@@ -1,16 +1,36 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import WelcomePage from "@/components/pages/WelcomePage/WelcomePage";
+import LoginPage from "@/components/pages/LoginPage/LoginPage";
+import RegisterPage from "@/components/pages/RegisterPage/RegisterPage";
+import ProtectedRoute from "@/components/ProtectedRoute";
 // import DashboardPage from "./pages/DashboardPage";
 
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <WelcomePage />,
+  },
+  {
+    path: "/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
+  },
+  {
+    path: "/dashboard",
+    element: (
+      <ProtectedRoute>
+        <div>Dashboard</div>
+      </ProtectedRoute>
+    ),
+  },
+]);
+
 const App = () => {
-  return (
-    <Routes>
-      <Route path="/" element={<WelcomePage />} />
-      {/* <Route path="/app" element={<DashboardPage />} /> */}{" "}
-      {/* Это прошлый App.jsx с использыванием api ( api буду переписывать) */}
-    </Routes>
-  );
+  return <RouterProvider router={router} />;
 };
 
 export default App;

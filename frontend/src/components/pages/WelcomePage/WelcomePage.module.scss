@@ -33,6 +33,12 @@
   font-weight: 700;
   color: $color-text-main;
   line-height: 1.2;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .logoSub {

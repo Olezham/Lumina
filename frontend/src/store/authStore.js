@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 export const useAuthStore = create(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       isAuthenticated: false,
@@ -22,9 +22,25 @@ export const useAuthStore = create(
           localStorage.removeItem("token");
           return { user: null, token: null, isAuthenticated: false };
         }),
+
+      restoreSession: async () => {
+        const { isAuthenticated, login, logout } = get();
+        const token = localStorage.getItem("token");
+
+        if (token && !isAuthenticated) {
+          try {
+            const user = await fetchUser();
+            login(user, token);
+          } catch (error) {
+            console.error("Failed to restore session:", error);
+            localStorage.removeItem("token");
+            logout();
+          }
+        }
+      },
     }),
-    {
-      name: "auth-storage",
-    },
+    { name: "auth-storage" },
   ),
 );
+
+useAuthStore.getState().restoreSession();
