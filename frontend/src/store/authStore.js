@@ -37,25 +37,23 @@ export const useAuthStore = create(
           return;
         }
 
-        if (token && !isAuthenticated) {
-          try {
-            const user = await fetchUser();
-            login(user, token);
-          } catch (error) {
-            console.error("Failed to restore session:", error);
-            localStorage.removeItem("token");
-            logout();
-          } finally {
-            set({ authChecked: true });
-          }
+        if (isAuthenticated) {
+          set({ authChecked: true });
           return;
         }
 
-        set({ authChecked: true });
+        try {
+          const user = await fetchUser();
+          login(user, token);
+        } catch (error) {
+          console.error("Failed to restore session:", error);
+          localStorage.removeItem("token");
+          logout();
+        } finally {
+          set({ authChecked: true });
+        }
       },
     }),
     { name: "auth-storage" },
   ),
 );
-
-useAuthStore.getState().restoreSession();

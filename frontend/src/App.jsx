@@ -4,6 +4,7 @@ import WelcomePage from "@/components/pages/WelcomePage/WelcomePage";
 import LoginPage from "@/components/pages/LoginPage/LoginPage";
 import RegisterPage from "@/components/pages/RegisterPage/RegisterPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import AuthBootstrap from "@/components/AuthBootstrap";
 // import DashboardPage from "./pages/DashboardPage";
 
 const router = createBrowserRouter([
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
 ]);
 
 const App = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <AuthBootstrap>
+      <RouterProvider router={router} />
+    </AuthBootstrap>
+  );
 };
 
 export default App;

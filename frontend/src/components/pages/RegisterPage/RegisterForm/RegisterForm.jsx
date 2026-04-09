@@ -29,7 +29,6 @@ const RegisterForm = () => {
       });
       const { user, token } = response;
       register(user, token);
-
       console.log("Registration successful!");
       navigate("/dashboard");
     } catch (error) {
