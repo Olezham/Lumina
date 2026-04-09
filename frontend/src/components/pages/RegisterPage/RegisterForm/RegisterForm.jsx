@@ -36,7 +36,7 @@ const RegisterForm = () => {
         if (error.response) {
           const errorMessage =
             error.response.data.detail || "Registration failed";
-          console.log(errorMessage);
+          alert(errorMessage);
         } else {
           console.log(
             "No response from server. Check your network or server status.",

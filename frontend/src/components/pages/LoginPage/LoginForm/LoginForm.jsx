@@ -27,15 +27,15 @@ const LoginForm = () => {
           const errorMessage =
             error.response.data.detail ||
             `Error ${error.response.status}: ${error.response.statusText}`;
-          console.log(errorMessage);
+          alert(errorMessage);
         } else {
-          alert(
+          console.log(
             "No response from server. Check your network or server status.",
           );
         }
       } else {
         console.error("Non-Axios error:", error);
-        alert("An unexpected error occurred");
+        console.log("An unexpected error occurred");
       }
     }
   };
