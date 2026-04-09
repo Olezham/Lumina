@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { fetchUser } from "@/api/auth";
 
 export const useAuthStore = create(
   persist(
@@ -7,16 +8,20 @@ export const useAuthStore = create(
       user: null,
       token: null,
       isAuthenticated: false,
+      authChecked: false,
+
       register: (user, token) =>
         set(() => {
           localStorage.setItem("token", token);
           return { user, token, isAuthenticated: true };
         }),
+
       login: (user, token) =>
         set(() => {
           localStorage.setItem("token", token);
           return { user, token, isAuthenticated: true };
         }),
+
       logout: () =>
         set(() => {
           localStorage.removeItem("token");
@@ -27,6 +32,11 @@ export const useAuthStore = create(
         const { isAuthenticated, login, logout } = get();
         const token = localStorage.getItem("token");
 
+        if (!token) {
+          set({ authChecked: true });
+          return;
+        }
+
         if (token && !isAuthenticated) {
           try {
             const user = await fetchUser();
@@ -35,8 +45,13 @@ export const useAuthStore = create(
             console.error("Failed to restore session:", error);
             localStorage.removeItem("token");
             logout();
+          } finally {
+            set({ authChecked: true });
           }
+          return;
         }
+
+        set({ authChecked: true });
       },
     }),
     { name: "auth-storage" },
