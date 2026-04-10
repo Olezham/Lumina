@@ -5,6 +5,7 @@ import LoginPage from "@/components/pages/LoginPage/LoginPage";
 import RegisterPage from "@/components/pages/RegisterPage/RegisterPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import GuestRoute from "@/components/GuestRoute";
+import DashboardPage from "@/components/pages/DashboardPage/DashboardPage";
 
 export const router = createBrowserRouter([
   { path: "/", element: <WelcomePage /> },
@@ -28,7 +29,7 @@ export const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <ProtectedRoute>
-        <div>Dashboard</div>
+        <DashboardPage />
       </ProtectedRoute>
     ),
   },
