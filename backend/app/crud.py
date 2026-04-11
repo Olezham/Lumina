@@ -3,8 +3,12 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def create_topic(db: Session, topic_in: schemas.TopicCreate):
-    topic = models.Topic(title=topic_in.title, description=topic_in.description)
+def create_topic(db: Session, user_id: int, topic_in: schemas.TopicCreate):
+    topic = models.Topic(
+        user_id=user_id,
+        title=topic_in.title,
+        description=topic_in.description,
+    )
     db.add(topic)
     db.commit()
     db.refresh(topic)

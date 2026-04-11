@@ -31,8 +31,12 @@ def list_topics(db: Session = Depends(get_db)):
 
 
 @app.post("/topics", response_model=schemas.TopicRead)
-def create_topic(topic_in: schemas.TopicCreate, db: Session = Depends(get_db)):
-    return crud.create_topic(db, topic_in)
+def create_topic(
+    topic_in: schemas.TopicCreate,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user),
+):
+    return crud.create_topic(db, user_id, topic_in)
 
 
 @app.delete("/topics/{topic_id}")
