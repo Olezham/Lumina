@@ -4,10 +4,10 @@ from sqlalchemy.orm import Session
 
 from .auth import check_existing_user, create_user, authenticate_user, login_user, get_current_user
 from . import crud, models, schemas
-from .database import Base, engine, get_db
+from .database import Base, get_db, sync_schema
 from .services.openai_service import get_answer
 
-Base.metadata.create_all(bind=engine)
+sync_schema(Base.metadata)
 
 app = FastAPI(title="Lumina API")
 
