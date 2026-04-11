@@ -1,8 +1,16 @@
-from fastapi import Depends, FastAPI, HTTPException, Response
+from fastapi import Depends, FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 
-from .auth import check_existing_user, create_user, authenticate_user, login_user, get_current_user
+from .auth import (
+    authenticate_user,
+    check_existing_user,
+    create_user,
+    get_current_user,
+    get_user_by_id,
+    login_user,
+    logout_user,
+)
 from . import crud, models, schemas
 from .database import Base, get_db, sync_schema
 from .services.openai_service import get_answer
@@ -13,7 +21,7 @@ app = FastAPI(title="Lumina API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -37,6 +45,7 @@ def create_topic(
     user_id: int = Depends(get_current_user),
 ):
     return crud.create_topic(db, user_id, topic_in)
+
 
 
 @app.delete("/topics/{topic_id}")
@@ -86,19 +95,37 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def login(creds: schemas.UserLogin, response: Response, db: Session = Depends(get_db)):
     user = authenticate_user(creds.email, creds.password, db)
     if user:
-        
         token = login_user(user.id)
-        print(f"Generated token for user {user.id}: {token}")  # Debug log
         response.set_cookie(
-        key="auth_token",
-        value=token,
-        httponly=True,  # Prevents JavaScript access (XSS protection)
-        secure=False,  # Send only over HTTPS (set False for local dev)
-        samesite="Strict"  # CSRF protection
-    )   
+            key="auth_token",
+            value=token,
+            httponly=True,
+            secure=False,
+            samesite="Strict",
+        )
         return {"message": "Login successful"}
-        
+
     return HTTPException(status_code=401, detail="Invalid credentials")
+
+
+@app.get("/me", response_model=schemas.UserRead)
+def get_me(
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user),
+):
+    user = get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+@app.post("/logout")
+def logout(request: Request, response: Response):
+    token = request.cookies.get("auth_token")
+    logout_user(token)
+    response.delete_cookie(key="auth_token")
+    return {"message": "Logout successful"}
+
 
 @app.get('/protected')
 def protected(user=Depends(get_current_user)):

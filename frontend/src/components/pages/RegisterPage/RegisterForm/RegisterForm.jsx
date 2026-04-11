@@ -2,7 +2,7 @@ import styles from "./RegisterForm.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { registerUser } from "@/api/auth";
+import { fetchUser, loginUser, registerUser } from "@/api/auth";
 import axios from "axios";
 
 const RegisterForm = () => {
@@ -23,12 +23,16 @@ const RegisterForm = () => {
     }
 
     try {
-      const response = await registerUser({
+      await registerUser({
         email: credentials.email,
         password: credentials.password,
       });
-      const { user, token } = response;
-      register(user, token);
+      await loginUser({
+        email: credentials.email,
+        password: credentials.password,
+      });
+      const user = await fetchUser();
+      register(user);
       console.log("Registration successful!");
       navigate("/dashboard");
     } catch (error) {

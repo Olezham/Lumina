@@ -10,3 +10,6 @@ def save_token(user_id: int, token: str, expires_in: int = 3600):
 def verify_token(token: str) -> int:
     user_id = r.get(f"auth_token:{token}")
     return int(user_id) if user_id else None
+
+def delete_token(token: str) -> None:
+    r.delete(f"auth_token:{token}")

@@ -1,13 +1,13 @@
 import secrets
 
-from fastapi import Request, HTTPException
+from fastapi import HTTPException, Request
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from datetime import datetime
 
 from .schemas import UserCreate
 from .models import User
-from .cache import save_token, verify_token
+from .cache import delete_token, save_token, verify_token
 
 
 
@@ -16,7 +16,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 def get_current_user(request: Request):
     token = request.cookies.get("auth_token")  # Extract token from cookies
-    print(token)
+
     if not token:
         raise HTTPException(status_code=401, detail="Missing authentication token")
     
@@ -35,11 +35,17 @@ def check_existing_user(db: Session,email: str):
 def generate_token():
 	return secrets.token_hex(32)  # A 64-character secure token
 
+
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(User).filter(User.id == user_id).first()
+
+
 def create_user(db: Session, user: UserCreate):
 	hashed_password = pwd_context.hash(user.password)
 	db_user = User(email=user.email,hashed_password=hashed_password,registered_at=datetime.now())
 	db.add(db_user)
 	db.commit()
+	db.refresh(db_user)
 	return {"message": "User created successfully", "user_id": db_user.id}
 
 
@@ -58,3 +64,7 @@ def login_user(user_id: int):
 	save_token(user_id, token)
 	return token
 
+
+def logout_user(token: str | None):
+    if token:
+        delete_token(token)

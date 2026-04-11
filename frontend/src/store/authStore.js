@@ -1,54 +1,43 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { fetchUser } from "@/api/auth";
+import { fetchUser, logoutUser } from "@/api/auth";
 
 export const useAuthStore = create(
   persist(
     (set, get) => ({
       user: null,
-      token: null,
       isAuthenticated: false,
       authChecked: false,
 
-      register: (user, token) =>
+      register: (user) =>
         set(() => {
-          localStorage.setItem("token", token);
-          return { user, token, isAuthenticated: true };
+          return { user, isAuthenticated: true };
         }),
 
-      login: (user, token) =>
+      login: (user) =>
         set(() => {
-          localStorage.setItem("token", token);
-          return { user, token, isAuthenticated: true };
+          return { user, isAuthenticated: true };
         }),
 
-      logout: () =>
-        set(() => {
-          localStorage.removeItem("token");
-          return { user: null, token: null, isAuthenticated: false };
-        }),
+      logout: async () => {
+        try {
+          await logoutUser();
+        } catch (error) {
+          console.error("Failed to logout cleanly:", error);
+        } finally {
+          set({ user: null, isAuthenticated: false, authChecked: true });
+        }
+      },
 
       restoreSession: async () => {
-        const { isAuthenticated, login, logout } = get();
-        const token = localStorage.getItem("token");
-
-        if (!token) {
-          set({ authChecked: true });
-          return;
-        }
-
-        if (isAuthenticated) {
-          set({ authChecked: true });
-          return;
-        }
+        const { login } = get();
 
         try {
           const user = await fetchUser();
-          login(user, token);
+          login(user);
         } catch (error) {
           console.error("Failed to restore session:", error);
-          localStorage.removeItem("token");
-          logout();
+          set({ user: null, isAuthenticated: false });
         } finally {
           set({ authChecked: true });
         }

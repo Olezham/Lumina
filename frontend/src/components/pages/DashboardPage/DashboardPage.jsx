@@ -33,8 +33,8 @@ const DashboardPage = () => {
     addMaterialToTopic,
   } = useDashboardData();
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     navigate("/login", { replace: true });
   };
 

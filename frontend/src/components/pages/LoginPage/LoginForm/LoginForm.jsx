@@ -2,7 +2,7 @@ import styles from "./LoginForm.module.scss";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
-import { loginUser } from "@/api/auth";
+import { fetchUser, loginUser } from "@/api/auth";
 import axios from "axios";
 
 const LoginForm = () => {
@@ -13,12 +13,12 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await loginUser({
+      await loginUser({
         email: credentials.email,
         password: credentials.password,
       });
-      const { user, token } = response;
-      login(user, token);
+      const user = await fetchUser();
+      login(user);
       console.log("Login successful!");
       navigate("/dashboard");
     } catch (error) {

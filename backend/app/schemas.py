@@ -56,3 +56,12 @@ class UserCreate(UserCredentials):
 
 class UserLogin(UserCredentials):
     pass
+
+
+class UserRead(BaseModel):
+    id: int
+    email: str
+    registered_at: datetime
+
+    class Config:
+        from_attributes = True

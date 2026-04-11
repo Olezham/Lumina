@@ -1,17 +1,10 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
-function authHeaders() {
-  const token = localStorage.getItem("token");
-  return {
-    "Content-Type": "application/json",
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  };
-}
-
 export async function loginUser(credentials) {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(credentials),
   });
   if (!res.ok) {
@@ -27,6 +20,7 @@ export async function registerUser(credentials) {
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(credentials),
   });
   if (!res.ok) {
@@ -40,8 +34,17 @@ export async function registerUser(credentials) {
 
 export async function fetchUser() {
   const res = await fetch(`${API_URL}/me`, {
-    headers: authHeaders(),
+    credentials: "include",
   });
   if (!res.ok) throw new Error("Failed to fetch user");
+  return res.json();
+}
+
+export async function logoutUser() {
+  const res = await fetch(`${API_URL}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+  if (!res.ok) throw new Error("Failed to logout");
   return res.json();
 }
