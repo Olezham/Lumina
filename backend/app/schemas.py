@@ -51,8 +51,24 @@ class UserCredentials(BaseModel):
     email: str
     password: str
 
+
 class UserCreate(UserCredentials):
-    pass 
+    pass
+
 
 class UserLogin(UserCredentials):
     pass
+
+
+class UserRead(BaseModel):
+    id: int
+    email: str
+    registered_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class AuthResponse(BaseModel):
+    message: str
+    user: UserRead

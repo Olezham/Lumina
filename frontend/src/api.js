@@ -1,43 +1,77 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000";
 
+async function request(path, options = {}) {
+  const res = await fetch(`${API_URL}${path}`, {
+    credentials: "include",
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
+
+  const contentType = res.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json")
+    ? await res.json()
+    : null;
+
+  if (!res.ok) {
+    const message = payload?.detail || payload?.message || "Request failed";
+    const error = new Error(message);
+    error.status = res.status;
+    throw error;
+  }
+
+  return payload;
+}
+
 export async function getTopics() {
-  const res = await fetch(`${API_URL}/topics`);
-  if (!res.ok) throw new Error("Failed to load topics");
-  return res.json();
+  return request("/topics", { method: "GET" });
 }
 
 export async function createTopic(payload) {
-  const res = await fetch(`${API_URL}/topics`, {
+  return request("/topics", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to create topic");
-  return res.json();
 }
 
 export async function getMaterials(topicId) {
-  const res = await fetch(`${API_URL}/topics/${topicId}/materials`);
-  if (!res.ok) throw new Error("Failed to load materials");
-  return res.json();
+  return request(`/topics/${topicId}/materials`, { method: "GET" });
 }
 
 export async function createMaterial(topicId, payload) {
-  const res = await fetch(`${API_URL}/topics/${topicId}/materials`, {
+  return request(`/topics/${topicId}/materials`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to create material");
-  return res.json();
 }
 
 export async function askQuestion(topicId, question) {
-  const res = await fetch(`${API_URL}/topics/${topicId}/ask`, {
+  return request(`/topics/${topicId}/ask`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ question }),
   });
-  if (!res.ok) throw new Error("Failed to ask question");
-  return res.json();
+}
+
+export async function register(payload) {
+  return request("/register", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function login(payload) {
+  return request("/login", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function getCurrentUser() {
+  return request("/me", { method: "GET" });
+}
+
+export async function logout() {
+  return request("/logout", { method: "POST" });
 }

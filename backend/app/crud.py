@@ -3,24 +3,37 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
-def create_topic(db: Session, topic_in: schemas.TopicCreate):
-    topic = models.Topic(title=topic_in.title, description=topic_in.description)
+def create_topic(db: Session, user_id: int, topic_in: schemas.TopicCreate):
+    topic = models.Topic(
+        user_id=user_id,
+        title=topic_in.title,
+        description=topic_in.description,
+    )
     db.add(topic)
     db.commit()
     db.refresh(topic)
     return topic
 
 
-def get_topics(db: Session):
-    return db.query(models.Topic).order_by(models.Topic.created_at.desc()).all()
+def get_topics(db: Session, user_id: int):
+    return (
+        db.query(models.Topic)
+        .filter(models.Topic.user_id == user_id)
+        .order_by(models.Topic.created_at.desc())
+        .all()
+    )
 
 
-def get_topic(db: Session, topic_id: int):
-    return db.query(models.Topic).filter(models.Topic.id == topic_id).first()
+def get_topic(db: Session, topic_id: int, user_id: int):
+    return (
+        db.query(models.Topic)
+        .filter(models.Topic.id == topic_id, models.Topic.user_id == user_id)
+        .first()
+    )
 
 
-def delete_topic(db: Session, topic_id: int):
-    topic = get_topic(db, topic_id)
+def delete_topic(db: Session, topic_id: int, user_id: int):
+    topic = get_topic(db, topic_id, user_id)
     if not topic:
         return False
     db.delete(topic)
