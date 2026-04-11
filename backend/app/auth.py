@@ -1,6 +1,6 @@
 import secrets
 
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, Response
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 from datetime import datetime
@@ -58,3 +58,12 @@ def login_user(user_id: int):
 	save_token(user_id, token)
 	return token
 
+
+def set_auth_cookie(response: Response, token: str):
+	response.set_cookie(
+		key="auth_token",
+		value=token,
+		httponly=True,
+		secure=False,
+		samesite="Strict",
+	)
