@@ -11,6 +11,7 @@ function authHeaders() {
 export async function loginUser(credentials) {
   const res = await fetch(`${API_URL}/login`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
@@ -26,6 +27,7 @@ export async function loginUser(credentials) {
 export async function registerUser(credentials) {
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
+    credentials: "include",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
   });
@@ -40,6 +42,7 @@ export async function registerUser(credentials) {
 
 export async function fetchUser() {
   const res = await fetch(`${API_URL}/me`, {
+    credentials: "include",
     headers: authHeaders(),
   });
   if (!res.ok) throw new Error("Failed to fetch user");

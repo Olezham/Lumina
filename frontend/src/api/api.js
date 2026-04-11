@@ -11,6 +11,7 @@ function authHeaders(extra = {}) {
 
 export async function getTopics() {
   const res = await fetch(`${API_URL}/topics`, {
+    credentials: "include",
     headers: authHeaders(),
   });
   if (!res.ok) throw new Error("Failed to load topics");
@@ -20,6 +21,7 @@ export async function getTopics() {
 export async function createTopic(payload) {
   const res = await fetch(`${API_URL}/topics`, {
     method: "POST",
+    credentials: "include",
     headers: authHeaders(),
     body: JSON.stringify(payload),
   });
@@ -29,6 +31,7 @@ export async function createTopic(payload) {
 
 export async function getMaterials(topicId) {
   const res = await fetch(`${API_URL}/topics/${topicId}/materials`, {
+    credentials: "include",
     headers: authHeaders(),
   });
   if (!res.ok) throw new Error("Failed to load materials");
@@ -38,6 +41,7 @@ export async function getMaterials(topicId) {
 export async function createMaterial(topicId, payload) {
   const res = await fetch(`${API_URL}/topics/${topicId}/materials`, {
     method: "POST",
+    credentials: "include",
     headers: authHeaders(),
     body: JSON.stringify(payload),
   });
@@ -48,6 +52,7 @@ export async function createMaterial(topicId, payload) {
 export async function askQuestion(topicId, question) {
   const res = await fetch(`${API_URL}/topics/${topicId}/ask`, {
     method: "POST",
+    credentials: "include",
     headers: authHeaders(),
     body: JSON.stringify({ question }),
   });
