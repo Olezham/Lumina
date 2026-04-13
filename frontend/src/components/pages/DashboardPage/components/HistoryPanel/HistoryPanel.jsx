@@ -1,10 +1,11 @@
-import styles from "../DashboardPage.module.scss";
+import pageStyles from "../../DashboardPage.module.scss";
+import styles from "./HistoryPanel.module.scss";
 
 const HistoryPanel = () => {
   return (
-    <div className={styles.panel}>
-      <div className={styles.panelHeader}>
-        <div className={styles.panelTitle}>History</div>
+    <div className={pageStyles.panel}>
+      <div className={pageStyles.panelHeader}>
+        <div className={pageStyles.panelTitle}>History</div>
       </div>
 
       <div className={styles.historyBlock}>
@@ -24,7 +25,7 @@ const HistoryPanel = () => {
           </div>
         </div>
 
-        <button className={styles.linkBtn} disabled>
+        <button className={pageStyles.linkBtn} disabled>
           View all activity
         </button>
       </div>

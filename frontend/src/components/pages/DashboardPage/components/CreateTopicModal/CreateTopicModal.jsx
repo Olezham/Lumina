@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import styles from "../DashboardPage.module.scss";
+import styles from "./CreateTopicModal.module.scss";
 
 const CreateTopicModal = ({ open, onClose, onCreate, submitting }) => {
   const [title, setTitle] = useState("");

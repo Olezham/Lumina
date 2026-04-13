@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import styles from "../DashboardPage.module.scss";
+import styles from "./DeleteTopicModal.module.scss";
 
 const TrashIcon = () => (
   <svg

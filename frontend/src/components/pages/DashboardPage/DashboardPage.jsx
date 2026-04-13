@@ -7,9 +7,9 @@ import DashboardTopbar from "./components/DashboardTopbar";
 import DashboardSidebar from "./components/DashboardSidebar";
 import TopicHeader from "./components/TopicHeader";
 import MaterialsPanel from "./components/MaterialsPanel";
-import HistoryPanel from "./components/HistoryPanel";
-import CreateTopicModal from "./components/CreateTopicModal";
-import DeleteTopicModal from "./components/DeleteTopicModal";
+import HistoryPanel from "./components/HistoryPanel/HistoryPanel";
+import CreateTopicModal from "./components/CreateTopicModal/CreateTopicModal";
+import DeleteTopicModal from "./components/DeleteTopicModal/DeleteTopicModal";
 import useDashboardData from "./hooks/useDashboardData";
 
 const DashboardPage = () => {
