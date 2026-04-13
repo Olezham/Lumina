@@ -59,3 +59,13 @@ export async function askQuestion(topicId, question) {
   if (!res.ok) throw new Error("Failed to ask question");
   return res.json();
 }
+
+export async function deleteTopic(topicId) {
+  const res = await fetch(`${API_URL}/topics/${topicId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  if (!res.ok) throw new Error("Failed to delete topic");
+  return res.json();
+}

@@ -66,6 +66,7 @@ const DashboardSidebar = ({
   selectedTopicId,
   onSelectTopic,
   onOpenCreateTopic,
+  onDeleteTopic,
   onLogout,
 }) => {
   const handleHelp = (e) => {
@@ -93,16 +94,31 @@ const DashboardSidebar = ({
         ) : (
           topics.map((t) => {
             const active = String(t.id) === String(selectedTopicId);
+
             return (
-              <button
+              <div
                 key={t.id}
                 className={`${styles.topicItem} ${active ? styles.active : ""}`}
-                onClick={() => onSelectTopic(t.id)}
-                title={t.title}
               >
-                <span className={styles.topicIcon}>📁</span>
-                <span className={styles.topicText}>{t.title}</span>
-              </button>
+                <button
+                  type="button"
+                  className={styles.topicSelectBtn}
+                  onClick={() => onSelectTopic(t.id)}
+                  title={t.title}
+                >
+                  <span className={styles.topicIcon}>📁</span>
+                  <span className={styles.topicText}>{t.title}</span>
+                </button>
+
+                <button
+                  type="button"
+                  className={styles.topicDeleteBtn}
+                  title="Delete topic"
+                  onClick={() => onDeleteTopic?.(t.id)}
+                >
+                  🗑
+                </button>
+              </div>
             );
           })
         )}

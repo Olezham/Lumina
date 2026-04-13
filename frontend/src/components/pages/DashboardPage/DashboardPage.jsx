@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import styles from "./DashboardPage.module.scss";
 import { useAuthStore } from "@/store/authStore";
 import { useNavigate } from "react-router-dom";
@@ -9,12 +9,16 @@ import TopicHeader from "./components/TopicHeader";
 import MaterialsPanel from "./components/MaterialsPanel";
 import HistoryPanel from "./components/HistoryPanel";
 import CreateTopicModal from "./components/CreateTopicModal";
+import DeleteTopicModal from "./components/DeleteTopicModal";
 import useDashboardData from "./hooks/useDashboardData";
 
 const DashboardPage = () => {
   const navigate = useNavigate();
   const logout = useAuthStore((s) => s.logout);
+
   const [createOpen, setCreateOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [topicToDelete, setTopicToDelete] = useState(null);
 
   const {
     topics,
@@ -31,11 +35,31 @@ const DashboardPage = () => {
 
     createNewTopic,
     addMaterialToTopic,
+    removeTopic,
   } = useDashboardData();
+
+  const deleteTitle = useMemo(() => {
+    if (topicToDelete?.title) return topicToDelete.title;
+    const t = topics.find((x) => String(x.id) === String(topicToDelete?.id));
+    return t?.title || "";
+  }, [topicToDelete, topics]);
 
   const handleLogout = () => {
     logout();
     navigate("/login", { replace: true });
+  };
+
+  const openDelete = (topicId) => {
+    const t = topics.find((x) => String(x.id) === String(topicId));
+    setTopicToDelete({ id: topicId, title: t?.title || "" });
+    setDeleteOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!topicToDelete?.id) return;
+    await removeTopic(topicToDelete.id);
+    setDeleteOpen(false);
+    setTopicToDelete(null);
   };
 
   return (
@@ -46,6 +70,7 @@ const DashboardPage = () => {
         selectedTopicId={selectedTopicId}
         onSelectTopic={setSelectedTopicId}
         onOpenCreateTopic={() => setCreateOpen(true)}
+        onDeleteTopic={openDelete}
         onLogout={handleLogout}
       />
 
@@ -77,6 +102,17 @@ const DashboardPage = () => {
         onClose={() => setCreateOpen(false)}
         onCreate={createNewTopic}
         submitting={topicSubmitting}
+      />
+
+      <DeleteTopicModal
+        open={deleteOpen}
+        topicTitle={deleteTitle}
+        onClose={() => {
+          setDeleteOpen(false);
+          setTopicToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        submitting={false}
       />
     </div>
   );

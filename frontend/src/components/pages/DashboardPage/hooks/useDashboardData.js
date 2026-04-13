@@ -4,6 +4,7 @@ import {
   createTopic,
   getMaterials,
   getTopics,
+  deleteTopic,
 } from "@/api/api";
 
 const useDashboardData = () => {
@@ -79,6 +80,27 @@ const useDashboardData = () => {
     }
   };
 
+  const removeTopic = async (topicId) => {
+    if (!topicId) return;
+
+    await deleteTopic(topicId);
+
+    setTopics((prev) => {
+      const next = prev.filter((t) => String(t.id) !== String(topicId));
+
+      setSelectedTopicId((current) => {
+        if (String(current) !== String(topicId)) return current;
+        return next[0]?.id ?? null;
+      });
+
+      return next;
+    });
+
+    if (String(selectedTopicId) === String(topicId)) {
+      setMaterials([]);
+    }
+  };
+
   useEffect(() => {
     loadTopics();
   }, []);
@@ -105,6 +127,7 @@ const useDashboardData = () => {
     loadMaterials,
     createNewTopic,
     addMaterialToTopic,
+    removeTopic,
   };
 };
 
