@@ -73,7 +73,12 @@ const useDashboardData = () => {
 
     setMaterialSubmitting(true);
     try {
-      await createMaterial(topicId, { text: text.trim() });
+      await createMaterial(topicId, {
+        title: "Notes",
+        content: text.trim(),
+        source_type: "text",
+        file_name: "",
+      });
       await loadMaterials(topicId);
     } finally {
       setMaterialSubmitting(false);

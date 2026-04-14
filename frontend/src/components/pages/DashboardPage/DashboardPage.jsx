@@ -79,7 +79,11 @@ const DashboardPage = () => {
 
         <div className={styles.content}>
           <section className={styles.center}>
-            <TopicHeader topic={selectedTopic} />
+            <TopicHeader
+              topic={selectedTopic}
+              topicId={selectedTopicId}
+              materialsCount={materials?.length ?? 0}
+            />
           </section>
 
           <aside className={styles.right}>

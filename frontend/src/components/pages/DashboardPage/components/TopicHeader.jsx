@@ -1,6 +1,7 @@
 import styles from "../DashboardPage.module.scss";
+import ChatPanel from "./ChatPanel/ChatPanel";
 
-const TopicHeader = ({ topic }) => {
+const TopicHeader = ({ topic, topicId, materialsCount }) => {
   if (!topic) {
     return (
       <div className={styles.emptyState}>
@@ -23,18 +24,7 @@ const TopicHeader = ({ topic }) => {
         {topic.description || "No description yet."}
       </p>
 
-      <div className={styles.placeholderCard}>
-        <div className={styles.placeholderHeader}>
-          <span className={styles.badge}>AI Insights</span>
-          <span className={styles.placeholderSub}>
-            curated from uploaded materials
-          </span>
-        </div>
-        <div className={styles.placeholderBody}>
-          Пока без чата/ответов — добавь материалы справа, и дальше подключим
-          чат.
-        </div>
-      </div>
+      <ChatPanel topicId={topicId} materialsCount={materialsCount} />
     </>
   );
 };
