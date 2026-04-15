@@ -1,4 +1,5 @@
 import styles from "../DashboardPage.module.scss";
+import { useNavigate } from "react-router-dom";
 
 const HelpIcon = (props) => (
   <svg
@@ -69,8 +70,11 @@ const DashboardSidebar = ({
   onDeleteTopic,
   onLogout,
 }) => {
+  const navigate = useNavigate();
+
   const handleHelp = (e) => {
     e.preventDefault();
+    navigate("/help");
   };
 
   return (
