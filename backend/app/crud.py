@@ -53,6 +53,15 @@ def get_materials(db: Session, topic_id: int):
     return db.query(models.Material).filter(models.Material.topic_id == topic_id).all()
 
 
+def get_chat_history(db: Session, topic_id: int):
+    return (
+        db.query(models.ChatHistory)
+        .filter(models.ChatHistory.topic_id == topic_id)
+        .order_by(models.ChatHistory.created_at.asc(), models.ChatHistory.id.asc())
+        .all()
+    )
+
+
 def add_chat_history(db: Session, topic_id: int, question: str, answer: str):
     chat = models.ChatHistory(topic_id=topic_id, question=question, answer=answer)
     db.add(chat)

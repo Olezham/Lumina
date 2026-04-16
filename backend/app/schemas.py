@@ -47,6 +47,17 @@ class AskResponse(BaseModel):
     answer: str
 
 
+class ChatHistoryRead(BaseModel):
+    id: int
+    topic_id: int
+    question: str
+    answer: str
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
 class UserCredentials(BaseModel):
     email: str
     password: str

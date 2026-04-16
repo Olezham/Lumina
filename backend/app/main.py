@@ -88,6 +88,18 @@ def create_material(
     return crud.create_material(db, topic_id, material_in)
 
 
+@app.get("/topics/{topic_id}/history", response_model=list[schemas.ChatHistoryRead])
+def list_chat_history(
+    topic_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user),
+):
+    topic = crud.get_topic(db, topic_id, user_id)
+    if not topic:
+        raise HTTPException(status_code=404, detail="Topic not found or This topic not belongs to logged-in user")
+    return crud.get_chat_history(db, topic_id)
+
+
 @app.post("/topics/{topic_id}/ask", response_model=schemas.AskResponse)
 def ask_question(
     topic_id: int,
