@@ -353,6 +353,10 @@
   max-width: 780px;
   line-height: 1.7;
   font-size: 15px;
+  max-width: 80ch;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .placeholderCard {

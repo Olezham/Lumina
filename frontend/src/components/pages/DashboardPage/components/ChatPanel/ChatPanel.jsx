@@ -83,8 +83,8 @@ const ChatPanel = ({ topicId, materialsCount }) => {
 
       {(materialsCount ?? 0) === 0 ? (
         <div className={styles.placeholderBody}>
-          Пока без чата/ответов — добавь материалы справа, и дальше подключим
-          чат.
+          No chat/answers yet - add case materials, and then we'll connect the
+          chat.
         </div>
       ) : (
         <>
@@ -111,7 +111,7 @@ const ChatPanel = ({ topicId, materialsCount }) => {
 
             {sending ? (
               <div className={`${styles.chatMsg} ${styles.chatMsgAssistant}`}>
-                Думаю...
+                Thinking...
               </div>
             ) : null}
           </div>
