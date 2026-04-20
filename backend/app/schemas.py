@@ -30,6 +30,13 @@ class MaterialCreate(MaterialBase):
     pass
 
 
+class MaterialUpdate(BaseModel):
+    title: str
+    content: str
+    source_type: str = "text"
+    file_name: str = ""
+
+
 class MaterialRead(MaterialBase):
     id: int
     topic_id: int

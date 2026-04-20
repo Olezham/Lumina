@@ -53,6 +53,42 @@ def get_materials(db: Session, topic_id: int):
     return db.query(models.Material).filter(models.Material.topic_id == topic_id).all()
 
 
+def get_material(db: Session, topic_id: int, material_id: int):
+    return (
+        db.query(models.Material)
+        .filter(models.Material.id == material_id, models.Material.topic_id == topic_id)
+        .first()
+    )
+
+
+def update_material(
+    db: Session,
+    topic_id: int,
+    material_id: int,
+    material_in: schemas.MaterialUpdate,
+):
+    material = get_material(db, topic_id, material_id)
+    if not material:
+        return None
+
+    for field, value in material_in.model_dump().items():
+        setattr(material, field, value)
+
+    db.commit()
+    db.refresh(material)
+    return material
+
+
+def delete_material(db: Session, topic_id: int, material_id: int):
+    material = get_material(db, topic_id, material_id)
+    if not material:
+        return False
+
+    db.delete(material)
+    db.commit()
+    return True
+
+
 def get_chat_history(db: Session, topic_id: int):
     return (
         db.query(models.ChatHistory)
