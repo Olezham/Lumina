@@ -404,6 +404,11 @@
   border-radius: 22px;
   padding: 16px;
   box-shadow: 0 18px 40px rgba(17, 24, 39, 0.06);
+
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 140px);
+  overflow: hidden;
 }
 
 .panelHeader {
@@ -429,7 +434,14 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
+
+  height: 100px;
+  overflow-y: auto;
+
+  padding-right: 6px;
   margin-bottom: 14px;
+
+  -webkit-overflow-scrolling: touch;
 }
 
 .materialItem {
