@@ -7,10 +7,17 @@ import DashboardTopbar from "./components/DashboardTopbar";
 import DashboardSidebar from "./components/DashboardSidebar";
 import TopicHeader from "./components/TopicHeader";
 import MaterialsPanel from "./components/MaterialsPanel";
-import HistoryPanel from "./components/HistoryPanel/HistoryPanel";
+// import HistoryPanel from "./components/HistoryPanel/HistoryPanel";
 import CreateTopicModal from "./components/CreateTopicModal/CreateTopicModal";
 import DeleteTopicModal from "./components/DeleteTopicModal/DeleteTopicModal";
 import useDashboardData from "./hooks/useDashboardData";
+import { motion } from "motion/react";
+
+const pageMotion = {
+  initial: { opacity: 0, y: 10, filter: "blur(6px)" },
+  animate: { opacity: 1, y: 0, filter: "blur(0px)" },
+  exit: { opacity: 0, y: -8, filter: "blur(6px)" },
+};
 
 const DashboardPage = () => {
   const navigate = useNavigate();
@@ -63,7 +70,14 @@ const DashboardPage = () => {
   };
 
   return (
-    <div className={styles.page}>
+    <motion.div
+      className={styles.page}
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={pageMotion}
+      transition={{ duration: 0.22, ease: "easeOut" }}
+    >
       <DashboardSidebar
         topics={topics}
         topicsLoading={topicsLoading}
@@ -88,7 +102,7 @@ const DashboardPage = () => {
 
           <aside className={styles.right}>
             <div className={styles.rightStack}>
-              <HistoryPanel />
+              {/* <HistoryPanel /> */}
               <MaterialsPanel
                 selectedTopicId={selectedTopicId}
                 materials={materials}
@@ -118,7 +132,7 @@ const DashboardPage = () => {
         onConfirm={confirmDelete}
         submitting={false}
       />
-    </div>
+    </motion.div>
   );
 };
 

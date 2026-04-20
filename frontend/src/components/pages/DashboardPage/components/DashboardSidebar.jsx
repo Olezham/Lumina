@@ -1,5 +1,6 @@
 import styles from "../DashboardPage.module.scss";
 import { useNavigate } from "react-router-dom";
+import { LayoutGroup, motion } from "motion/react";
 
 const HelpIcon = (props) => (
   <svg
@@ -84,72 +85,105 @@ const DashboardSidebar = ({
         <div className={styles.brandSub}>AI KNOWLEDGE BASE</div>
       </div>
 
-      <button className={styles.newTopicBtn} onClick={onOpenCreateTopic}>
+      <motion.button
+        className={styles.newTopicBtn}
+        onClick={onOpenCreateTopic}
+        whileHover={{ y: -1 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 520, damping: 30 }}
+      >
         <span className={styles.plus}>＋</span> New Topic
-      </button>
+      </motion.button>
 
       <div className={styles.sectionTitle}>My Topics</div>
 
-      <div className={styles.topicList}>
-        {topicsLoading ? (
-          <div className={styles.muted}>Loading topics...</div>
-        ) : topics.length === 0 ? (
-          <div className={styles.muted}>No topics yet</div>
-        ) : (
-          topics.map((t) => {
-            const active = String(t.id) === String(selectedTopicId);
+      <LayoutGroup>
+        <div className={styles.topicList}>
+          {topicsLoading ? (
+            <div className={styles.muted}>Loading topics...</div>
+          ) : topics.length === 0 ? (
+            <div className={styles.muted}>No topics yet</div>
+          ) : (
+            topics.map((t) => {
+              const active = String(t.id) === String(selectedTopicId);
 
-            return (
-              <div
-                key={t.id}
-                className={`${styles.topicItem} ${active ? styles.active : ""}`}
-              >
-                <button
-                  type="button"
-                  className={styles.topicSelectBtn}
-                  onClick={() => onSelectTopic(t.id)}
-                  title={t.title}
+              return (
+                <div
+                  key={t.id}
+                  className={`${styles.topicItem} ${active ? styles.active : ""}`}
                 >
-                  <span className={styles.topicIcon}>📁</span>
-                  <span className={styles.topicText}>{t.title}</span>
-                </button>
+                  {/* highlight подложка */}
+                  {active ? (
+                    <motion.div
+                      layoutId="topicHighlight"
+                      className={styles.topicHighlight}
+                      transition={{
+                        type: "spring",
+                        stiffness: 520,
+                        damping: 36,
+                      }}
+                    />
+                  ) : null}
 
-                <button
-                  type="button"
-                  className={styles.topicDeleteBtn}
-                  title="Delete topic"
-                  onClick={() => onDeleteTopic?.(t.id)}
-                >
-                  🗑
-                </button>
-              </div>
-            );
-          })
-        )}
-      </div>
+                  <motion.button
+                    type="button"
+                    className={styles.topicSelectBtn}
+                    onClick={() => onSelectTopic(t.id)}
+                    title={t.title}
+                    whileHover={{ y: -1 }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 30 }}
+                  >
+                    <span className={styles.topicIcon}>📁</span>
+                    <span className={styles.topicText}>{t.title}</span>
+                  </motion.button>
+
+                  <motion.button
+                    type="button"
+                    className={styles.topicDeleteBtn}
+                    title="Delete topic"
+                    onClick={() => onDeleteTopic?.(t.id)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 30 }}
+                  >
+                    🗑
+                  </motion.button>
+                </div>
+              );
+            })
+          )}
+        </div>
+      </LayoutGroup>
 
       <div className={styles.sidebarBottom}>
-        <button
+        <motion.button
           className={styles.sidebarAction}
           type="button"
           onClick={handleHelp}
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.99 }}
+          transition={{ type: "spring", stiffness: 520, damping: 30 }}
         >
           <span className={styles.sidebarActionIcon}>
             <HelpIcon />
           </span>
           <span className={styles.sidebarActionText}>Help Center</span>
-        </button>
+        </motion.button>
 
-        <button
+        <motion.button
           className={styles.sidebarAction}
           type="button"
           onClick={onLogout}
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.99 }}
+          transition={{ type: "spring", stiffness: 520, damping: 30 }}
         >
           <span className={styles.sidebarActionIcon}>
             <LogoutIcon />
           </span>
           <span className={styles.sidebarActionText}>Log Out</span>
-        </button>
+        </motion.button>
       </div>
     </aside>
   );

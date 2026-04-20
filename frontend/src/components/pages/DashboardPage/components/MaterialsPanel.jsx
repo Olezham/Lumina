@@ -1,5 +1,6 @@
 import { useState } from "react";
 import styles from "../DashboardPage.module.scss";
+import { AnimatePresence, motion } from "motion/react";
 
 const MaterialsPanel = ({
   selectedTopicId,
@@ -32,24 +33,35 @@ const MaterialsPanel = ({
           ) : materials.length === 0 ? (
             <div className={styles.muted}>No materials yet</div>
           ) : (
-            materials.map((m) => {
-              const preview = String(m.text || m.content || m.summary || "");
-              return (
-                <div
-                  key={m.id ?? m.created_at ?? preview.slice(0, 20)}
-                  className={styles.materialItem}
-                >
-                  <div className={styles.materialIcon}>📝</div>
-                  <div className={styles.materialTextWrap}>
-                    <div className={styles.materialTitle}>Material</div>
-                    <div className={styles.materialSub}>
-                      {preview.slice(0, 80)}
-                      {preview.length > 80 ? "..." : ""}
+            <AnimatePresence initial={false}>
+              {materials.map((m) => {
+                const preview = String(m.text || m.content || m.summary || "");
+                const key = String(
+                  m.id ?? m.created_at ?? preview.slice(0, 20),
+                );
+
+                return (
+                  <motion.div
+                    layout
+                    key={key}
+                    className={styles.materialItem}
+                    initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ type: "spring", stiffness: 520, damping: 34 }}
+                  >
+                    <div className={styles.materialIcon}>📝</div>
+                    <div className={styles.materialTextWrap}>
+                      <div className={styles.materialTitle}>Material</div>
+                      <div className={styles.materialSub}>
+                        {preview.slice(0, 80)}
+                        {preview.length > 80 ? "..." : ""}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              );
-            })
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           )
         ) : (
           <div className={styles.muted}>Select a topic first</div>
@@ -68,12 +80,16 @@ const MaterialsPanel = ({
             disabled={!selectedTopicId || materialSubmitting}
           />
         </label>
-        <button
+
+        <motion.button
+          whileHover={{ y: -1 }}
+          whileTap={{ scale: 0.98 }}
+          transition={{ type: "spring", stiffness: 520, damping: 30 }}
           className={styles.primaryBtn}
           disabled={!selectedTopicId || materialSubmitting}
         >
           {materialSubmitting ? "Adding..." : "Add Material"}
-        </button>
+        </motion.button>
       </form>
     </div>
   );

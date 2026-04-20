@@ -8,6 +8,33 @@
   font-family: "Plus Jakarta Sans", sans-serif;
 }
 
+.topicItem {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+
+  border-radius: 14px;
+  transition: 0.12s ease;
+
+  position: relative;
+  overflow: hidden;
+}
+
+.topicHighlight {
+  position: absolute;
+  inset: 0;
+  background: #eef2f6;
+  border-radius: 14px;
+  z-index: 0;
+}
+
+.topicSelectBtn,
+.topicDeleteBtn {
+  position: relative;
+  z-index: 1;
+}
+
 .sidebar {
   background: #ffffff;
   border-right: 1px solid #e8eaee;
@@ -435,7 +462,7 @@
   flex-direction: column;
   gap: 10px;
 
-  height: 100px;
+  height: 352px;
   overflow-y: auto;
 
   padding-right: 6px;
