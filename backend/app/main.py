@@ -88,6 +88,41 @@ def create_material(
     return crud.create_material(db, topic_id, material_in)
 
 
+@app.put("/topics/{topic_id}/materials/{material_id}", response_model=schemas.MaterialRead)
+def change_material(
+    topic_id: int,
+    material_id: int,
+    material_in: schemas.MaterialUpdate,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user),
+):
+    topic = crud.get_topic(db, topic_id, user_id)
+    if not topic:
+        raise HTTPException(status_code=404, detail="Topic not found")
+
+    material = crud.update_material(db, topic_id, material_id, material_in)
+    if not material:
+        raise HTTPException(status_code=404, detail="Material not found")
+    return material
+
+
+@app.delete("/topics/{topic_id}/materials/{material_id}")
+def remove_material(
+    topic_id: int,
+    material_id: int,
+    db: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user),
+):
+    topic = crud.get_topic(db, topic_id, user_id)
+    if not topic:
+        raise HTTPException(status_code=404, detail="Topic not found")
+
+    if not crud.delete_material(db, topic_id, material_id):
+        raise HTTPException(status_code=404, detail="Material not found")
+
+    return {"ok": True}
+
+
 @app.get("/topics/{topic_id}/history", response_model=list[schemas.ChatHistoryRead])
 def list_chat_history(
     topic_id: int,
