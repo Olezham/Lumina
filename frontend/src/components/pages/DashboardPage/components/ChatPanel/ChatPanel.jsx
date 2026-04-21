@@ -1,65 +1,198 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./ChatPanel.module.scss";
-import { askQuestion } from "@/api/api";
+import { askQuestion, getTopicHistory } from "@/api/api";
+
+const mapHistoryToMessages = (historyItems) => {
+  const items = Array.isArray(historyItems)
+    ? historyItems
+    : historyItems?.items || [];
+  const msgs = [];
+
+  for (const h of items) {
+    const created = h?.created_at
+      ? new Date(h.created_at).getTime()
+      : Date.now();
+
+    if (h?.question) {
+      msgs.push({
+        role: "user",
+        text: h.question,
+        id: `h-q-${h.id ?? created}-q`,
+      });
+    }
+    if (h?.answer) {
+      msgs.push({
+        role: "assistant",
+        text: h.answer,
+        id: `h-a-${h.id ?? created}-a`,
+      });
+    }
+  }
+
+  return msgs;
+};
 
 const ChatPanel = ({ topicId, materialsCount }) => {
   const [messages, setMessages] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
   const listRef = useRef(null);
 
+  const typingTimerRef = useRef(null);
+  const typingCancelRef = useRef({ cancelled: false });
+
+  const shouldStickToBottomRef = useRef(true);
+
+  const clearTypingTimer = () => {
+    if (typingTimerRef.current) window.clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = null;
+  };
+
+  const cancelTyping = () => {
+    typingCancelRef.current.cancelled = true;
+    clearTypingTimer();
+  };
+
+  const isNearBottom = (el) => {
+    if (!el) return true;
+    const threshold = 40;
+    return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+  };
+
+  const scrollToBottom = () => {
+    const el = listRef.current;
+    if (!el) return;
+    el.scrollTop = el.scrollHeight;
+  };
+
+  const loadHistory = async (tid) => {
+    if (!tid) return;
+
+    shouldStickToBottomRef.current = isNearBottom(listRef.current);
+
+    setHistoryLoading(true);
+    try {
+      const data = await getTopicHistory(tid);
+      setMessages(mapHistoryToMessages(data));
+    } catch (e) {
+      setMessages([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
   useEffect(() => {
+    cancelTyping();
     setMessages([]);
     setInput("");
     setSending(false);
+
+    if (!topicId) return;
+    loadHistory(topicId);
   }, [topicId]);
 
   useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+
+    const onScroll = () => {
+      shouldStickToBottomRef.current = isNearBottom(el);
+    };
+
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+  }, []);
+
+  useEffect(() => {
     if (!listRef.current) return;
-    listRef.current.scrollTop = listRef.current.scrollHeight;
-  }, [messages, sending]);
+    if (shouldStickToBottomRef.current) scrollToBottom();
+  }, [messages, historyLoading, sending]);
+
+  useEffect(() => {
+    return () => cancelTyping();
+  }, []);
 
   const canAsk = useMemo(() => {
     return Boolean(topicId) && (materialsCount ?? 0) > 0 && !sending;
   }, [topicId, materialsCount, sending]);
 
+  const typeAssistantAnswer = ({ messageId, fullText, onDone }) => {
+    const chunkSize = 2;
+    const baseDelay = 14;
+
+    typingCancelRef.current = { cancelled: false };
+    clearTypingTimer();
+
+    let i = 0;
+
+    const tick = () => {
+      if (typingCancelRef.current.cancelled) return;
+
+      i = Math.min(fullText.length, i + chunkSize);
+      const part = fullText.slice(0, i);
+
+      shouldStickToBottomRef.current = isNearBottom(listRef.current);
+
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === messageId
+            ? { ...m, text: part, typing: i < fullText.length }
+            : m,
+        ),
+      );
+
+      if (i < fullText.length) {
+        typingTimerRef.current = window.setTimeout(tick, baseDelay);
+      } else {
+        if (typeof onDone === "function") onDone();
+      }
+    };
+
+    tick();
+  };
+
   const send = async () => {
     const q = input.trim();
     if (!q || !topicId) return;
 
+    cancelTyping();
     setSending(true);
     setInput("");
 
+    const localBaseId = crypto.randomUUID?.() ?? String(Date.now());
+    const assistantMsgId = `local-${localBaseId}-a`;
+
+    shouldStickToBottomRef.current = true;
+
     setMessages((prev) => [
       ...prev,
-      {
-        role: "user",
-        text: q,
-        id: crypto.randomUUID?.() ?? String(Date.now()),
-      },
+      { role: "user", text: q, id: `local-${localBaseId}-q` },
+      { role: "assistant", text: "", id: assistantMsgId, typing: true },
     ]);
 
     try {
       const res = await askQuestion(topicId, q);
-      const answer = res?.answer ?? "No answer.";
+      const answer = String(res?.answer ?? "No answer.");
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: answer,
-          id: crypto.randomUUID?.() ?? String(Date.now() + 1),
-        },
-      ]);
+      typeAssistantAnswer({
+        messageId: assistantMsgId,
+        fullText: answer,
+        onDone: () => {},
+      });
     } catch (e) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          text: "Ошибка: не получилось получить ответ. Проверь backend и попробуй ещё раз.",
-          id: crypto.randomUUID?.() ?? String(Date.now() + 2),
-        },
-      ]);
+      setMessages((prev) =>
+        prev.map((m) =>
+          m.id === assistantMsgId
+            ? {
+                ...m,
+                typing: false,
+                text: "Ошибка: не получилось получить ответ. Проверь backend и попробуй ещё раз.",
+              }
+            : m,
+        ),
+      );
     } finally {
       setSending(false);
     }
@@ -89,7 +222,9 @@ const ChatPanel = ({ topicId, materialsCount }) => {
       ) : (
         <>
           <div className={styles.chatList} ref={listRef}>
-            {messages.length === 0 ? (
+            {historyLoading ? (
+              <div className={styles.chatEmpty}>Loading history...</div>
+            ) : messages.length === 0 ? (
               <div className={styles.chatEmpty}>
                 Ask questions about the materials in this topic - I answer only
                 based on the uploaded data.
@@ -105,15 +240,10 @@ const ChatPanel = ({ topicId, materialsCount }) => {
                   }`}
                 >
                   {m.text}
+                  {m.typing ? <span className={styles.typingCursor} /> : null}
                 </div>
               ))
             )}
-
-            {sending ? (
-              <div className={`${styles.chatMsg} ${styles.chatMsgAssistant}`}>
-                Thinking...
-              </div>
-            ) : null}
           </div>
 
           <div className={styles.chatComposer}>

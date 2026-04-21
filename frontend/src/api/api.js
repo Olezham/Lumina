@@ -97,3 +97,12 @@ export async function removeMaterial(topicId, materialId) {
   if (!res.ok) throw new Error("Failed to delete material");
   return res.json();
 }
+
+export async function getTopicHistory(topicId) {
+  const res = await fetch(`${API_URL}/topics/${topicId}/history`, {
+    credentials: "include",
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error("Failed to load chat history");
+  return res.json();
+}
