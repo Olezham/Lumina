@@ -9,14 +9,6 @@
 }
 
 .topicItem {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px;
-
-  border-radius: 14px;
-  transition: 0.12s ease;
-
   position: relative;
   overflow: hidden;
 }
@@ -33,6 +25,17 @@
 .topicDeleteBtn {
   position: relative;
   z-index: 1;
+}
+
+.topicDeleteBtn {
+  opacity: 0;
+  transform: translateY(2px);
+  transition: 0.15s ease;
+}
+
+.topicItem:hover .topicDeleteBtn {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .sidebar {
@@ -61,6 +64,15 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #6b7280;
+}
+
+.secondaryBtnInline {
+  border: 1px solid #e8eaee;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
 }
 
 .newTopicBtn {
@@ -438,6 +450,14 @@
   overflow: hidden;
 }
 
+.panelHeaderSticky {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  padding-top: 4px;
+  z-index: 2;
+}
+
 .panelHeader {
   display: flex;
   align-items: center;
@@ -458,16 +478,9 @@
 }
 
 .materialList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-
-  height: 352px;
+  height: 363px;
   overflow-y: auto;
-
   padding-right: 6px;
-  margin-bottom: 14px;
-
   -webkit-overflow-scrolling: touch;
 }
 
@@ -476,6 +489,7 @@
   grid-template-columns: 34px 1fr;
   gap: 10px;
   align-items: start;
+  margin-top: 12px;
   padding: 12px 12px;
   border-radius: 16px;
   background: #f8fafc;
@@ -576,6 +590,33 @@
   padding: 8px 10px;
 }
 
+.emptyBox {
+  border: 1px dashed #e5e7eb;
+  background: #fafafa;
+  border-radius: 16px;
+  padding: 14px;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 22px;
+  margin-bottom: 6px;
+}
+
+.emptyTitle {
+  font-weight: 900;
+  color: #111827;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.emptySub {
+  font-size: 12px;
+  color: #6b7280;
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+
 .emptyState {
   background: #ffffff;
   border: 1px solid #eef0f4;
@@ -607,6 +648,119 @@
   border-radius: 12px;
   text-align: center;
   cursor: not-allowed;
+}
+
+.topicSkeletonList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 6px;
+}
+
+.topicSkeletonItem {
+  height: 44px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 40%, #f3f4f6 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+}
+
+.skeletonList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeletonItem {
+  height: 60px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #f3f4f6 0%, #e5e7eb 40%, #f3f4f6 80%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s ease-in-out infinite;
+  border: 1px solid #eef0f4;
+}
+
+.materialRowTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.materialActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.materialActionBtn,
+.materialActionBtnDanger {
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.materialActionBtn:hover {
+  background: #eef2f6;
+}
+
+.materialActionBtnDanger:hover {
+  background: #fee2e2;
+}
+
+.materialActionBtn:disabled,
+.materialActionBtnDanger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.materialEditBox {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.materialEditActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.secondaryBtnInline {
+  border: 1px solid #e8eaee;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.primaryBtnSmall {
+  background: #27465b;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-weight: 900;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 @media (max-width: 1100px) {

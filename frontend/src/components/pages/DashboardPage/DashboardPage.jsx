@@ -42,6 +42,8 @@ const DashboardPage = () => {
 
     createNewTopic,
     addMaterialToTopic,
+    updateMaterialInTopic,
+    removeMaterialFromTopic,
     removeTopic,
   } = useDashboardData();
 
@@ -108,6 +110,8 @@ const DashboardPage = () => {
                 materials={materials}
                 materialsLoading={materialsLoading}
                 onAddMaterial={addMaterialToTopic}
+                onUpdateMaterial={updateMaterialInTopic}
+                onDeleteMaterial={removeMaterialFromTopic}
                 materialSubmitting={materialSubmitting}
               />
             </div>

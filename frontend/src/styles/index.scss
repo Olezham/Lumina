@@ -6,3 +6,13 @@
   color: $color-text-main;
   background-color: $color-bg;
 }
+
+:where(button, a):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(39, 70, 91, 0.18);
+  border-radius: 12px;
+}
+
+[data-motion-populated="true"] {
+  background: transparent;
+}

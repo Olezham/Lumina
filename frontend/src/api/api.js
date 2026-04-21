@@ -69,3 +69,31 @@ export async function deleteTopic(topicId) {
   if (!res.ok) throw new Error("Failed to delete topic");
   return res.json();
 }
+
+export async function updateMaterial(topicId, materialId, payload) {
+  const res = await fetch(
+    `${API_URL}/topics/${topicId}/materials/${materialId}`,
+    {
+      method: "PUT",
+      credentials: "include",
+      headers: authHeaders(),
+      body: JSON.stringify(payload),
+    },
+  );
+  if (!res.ok) throw new Error("Failed to update material");
+  return res.json();
+}
+
+export async function removeMaterial(topicId, materialId) {
+  const res = await fetch(
+    `${API_URL}/topics/${topicId}/materials/${materialId}`,
+    {
+      method: "DELETE",
+      credentials: "include",
+      headers: authHeaders(),
+    },
+  );
+
+  if (!res.ok) throw new Error("Failed to delete material");
+  return res.json();
+}

@@ -1,6 +1,6 @@
 import styles from "../DashboardPage.module.scss";
 import { useNavigate } from "react-router-dom";
-import { LayoutGroup, motion } from "motion/react";
+import { LayoutGroup, motion, useReducedMotion } from "motion/react";
 
 const HelpIcon = (props) => (
   <svg
@@ -62,6 +62,8 @@ const LogoutIcon = (props) => (
   </svg>
 );
 
+const skeleton = Array.from({ length: 6 }).map((_, i) => i);
+
 const DashboardSidebar = ({
   topics,
   topicsLoading,
@@ -72,11 +74,16 @@ const DashboardSidebar = ({
   onLogout,
 }) => {
   const navigate = useNavigate();
+  const reduceMotion = useReducedMotion();
 
   const handleHelp = (e) => {
     e.preventDefault();
     navigate("/help");
   };
+
+  const btnTrans = reduceMotion
+    ? { duration: 0 }
+    : { type: "spring", stiffness: 520, damping: 30 };
 
   return (
     <aside className={styles.sidebar}>
@@ -88,9 +95,9 @@ const DashboardSidebar = ({
       <motion.button
         className={styles.newTopicBtn}
         onClick={onOpenCreateTopic}
-        whileHover={{ y: -1 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 520, damping: 30 }}
+        whileHover={reduceMotion ? undefined : { y: -1 }}
+        whileTap={reduceMotion ? undefined : { scale: 0.98 }}
+        transition={btnTrans}
       >
         <span className={styles.plus}>＋</span> New Topic
       </motion.button>
@@ -100,7 +107,11 @@ const DashboardSidebar = ({
       <LayoutGroup>
         <div className={styles.topicList}>
           {topicsLoading ? (
-            <div className={styles.muted}>Loading topics...</div>
+            <div className={styles.topicSkeletonList}>
+              {skeleton.map((i) => (
+                <div key={i} className={styles.topicSkeletonItem} />
+              ))}
+            </div>
           ) : topics.length === 0 ? (
             <div className={styles.muted}>No topics yet</div>
           ) : (
@@ -112,16 +123,15 @@ const DashboardSidebar = ({
                   key={t.id}
                   className={`${styles.topicItem} ${active ? styles.active : ""}`}
                 >
-                  {/* highlight подложка */}
                   {active ? (
                     <motion.div
                       layoutId="topicHighlight"
                       className={styles.topicHighlight}
-                      transition={{
-                        type: "spring",
-                        stiffness: 520,
-                        damping: 36,
-                      }}
+                      transition={
+                        reduceMotion
+                          ? { duration: 0 }
+                          : { type: "spring", stiffness: 520, damping: 36 }
+                      }
                     />
                   ) : null}
 
@@ -130,9 +140,9 @@ const DashboardSidebar = ({
                     className={styles.topicSelectBtn}
                     onClick={() => onSelectTopic(t.id)}
                     title={t.title}
-                    whileHover={{ y: -1 }}
-                    whileTap={{ scale: 0.99 }}
-                    transition={{ type: "spring", stiffness: 520, damping: 30 }}
+                    whileHover={reduceMotion ? undefined : { y: -1 }}
+                    whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+                    transition={btnTrans}
                   >
                     <span className={styles.topicIcon}>📁</span>
                     <span className={styles.topicText}>{t.title}</span>
@@ -143,9 +153,9 @@ const DashboardSidebar = ({
                     className={styles.topicDeleteBtn}
                     title="Delete topic"
                     onClick={() => onDeleteTopic?.(t.id)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 520, damping: 30 }}
+                    whileHover={reduceMotion ? undefined : { scale: 1.06 }}
+                    whileTap={reduceMotion ? undefined : { scale: 0.95 }}
+                    transition={btnTrans}
                   >
                     🗑
                   </motion.button>
@@ -161,9 +171,9 @@ const DashboardSidebar = ({
           className={styles.sidebarAction}
           type="button"
           onClick={handleHelp}
-          whileHover={{ y: -1 }}
-          whileTap={{ scale: 0.99 }}
-          transition={{ type: "spring", stiffness: 520, damping: 30 }}
+          whileHover={reduceMotion ? undefined : { y: -1 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+          transition={btnTrans}
         >
           <span className={styles.sidebarActionIcon}>
             <HelpIcon />
@@ -175,9 +185,9 @@ const DashboardSidebar = ({
           className={styles.sidebarAction}
           type="button"
           onClick={onLogout}
-          whileHover={{ y: -1 }}
-          whileTap={{ scale: 0.99 }}
-          transition={{ type: "spring", stiffness: 520, damping: 30 }}
+          whileHover={reduceMotion ? undefined : { y: -1 }}
+          whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+          transition={btnTrans}
         >
           <span className={styles.sidebarActionIcon}>
             <LogoutIcon />

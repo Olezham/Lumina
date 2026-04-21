@@ -5,6 +5,8 @@ import {
   getMaterials,
   getTopics,
   deleteTopic,
+  updateMaterial,
+  removeMaterial,
 } from "@/api/api";
 
 const useDashboardData = () => {
@@ -85,6 +87,44 @@ const useDashboardData = () => {
     }
   };
 
+  const updateMaterialInTopic = async ({ topicId, materialId, text }) => {
+    if (!topicId || !materialId) return;
+    if (!text?.trim()) return;
+
+    const content = text.trim();
+
+    // optimistic update
+    setMaterials((prev) =>
+      prev.map((m) =>
+        String(m.id) === String(materialId)
+          ? { ...m, content, text: content }
+          : m,
+      ),
+    );
+
+    await updateMaterial(topicId, materialId, {
+      title: "Notes",
+      content,
+      source_type: "text",
+      file_name: "",
+    });
+
+    await loadMaterials(topicId);
+  };
+
+  const removeMaterialFromTopic = async ({ topicId, materialId }) => {
+    if (!topicId || !materialId) return;
+
+    // optimistic remove
+    setMaterials((prev) =>
+      prev.filter((m) => String(m.id) !== String(materialId)),
+    );
+
+    await removeMaterial(topicId, materialId);
+
+    await loadMaterials(topicId);
+  };
+
   const removeTopic = async (topicId) => {
     if (!topicId) return;
 
@@ -132,6 +172,8 @@ const useDashboardData = () => {
     loadMaterials,
     createNewTopic,
     addMaterialToTopic,
+    updateMaterialInTopic,
+    removeMaterialFromTopic,
     removeTopic,
   };
 };
