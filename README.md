@@ -1,66 +1,71 @@
 # Lumina
 
-A full-stack AI-assisted learning workspace for organizing study topics, storing reference materials, and asking contextual questions about them.
+Lumina is a full-stack learning workspace for organizing study topics, storing reference materials, and asking AI-assisted questions against those materials.
 
-This project demonstrates a modern frontend/backend architecture with authentication, persistent data storage, an external AI service integration, and containerized local development.
+This project is a portfolio example for backend/API design, relational data modeling, frontend/backend integration, authentication basics, external API integration, and Docker-based local development.
 
-## What it does
+## What It Solves
 
-- Create and manage learning topics
-- Add reference materials to individual topics
-- Ask AI-assisted questions using the saved topic context
-- Store question and answer history
-- Register and authenticate users
+When studying a topic, notes and reference material often become scattered. Lumina gives each topic a structured place for saved material and lets the user ask contextual questions using only the material attached to that topic.
+
+If no OpenAI API key is configured, the backend returns a clear fallback response instead of failing silently.
+
+## Features
+
+- Create, list, and delete learning topics
+- Add reference materials to a topic
+- Ask questions against the saved topic materials
+- Store question/answer history in the database layer
+- Register users with hashed passwords
+- Login with a cookie-based token flow
 - Protect authenticated routes
-- Run the full application with Docker Compose
-
-## Tech stack
-
-### Backend
-- Python
-- FastAPI
-- SQLAlchemy
-- PostgreSQL / SQLite
-- OpenAI API
-- Redis
-- Passlib / bcrypt authentication
-- Uvicorn
-
-### Frontend
-- React
-- Vite
-- React Router
-- Axios
-- React Hook Form
-- Zod
-- Zustand
-- Radix UI
-- Sass
-
-### Dev / Infrastructure
-- Docker
-- Docker Compose
-- Environment-based configuration
+- Run PostgreSQL, Redis, backend, and frontend with Docker Compose
 
 ## Architecture
 
 ```text
 React / Vite frontend
         |
-        | REST API
+        | fetch-based REST calls
         v
 FastAPI backend
    |        |        |
    |        |        +--> OpenAI API
-   |        +-----------> Redis
-   +--------------------> SQLAlchemy -> PostgreSQL / SQLite
+   |        +-----------> Redis token storage
+   +--------------------> SQLAlchemy -> PostgreSQL or SQLite
 ```
 
-The backend exposes REST endpoints for topics, materials, authentication, protected resources, and AI-assisted Q&A. The frontend consumes these endpoints through Axios and uses client-side routing and state management.
+The backend owns the API, data models, authentication flow, and OpenAI prompt construction. The frontend provides the topic/material/question workflow and calls the backend through a small API helper module.
 
-## API examples
+## Tech Stack
 
-Some of the implemented endpoints include:
+### Backend
+
+- Python
+- FastAPI
+- SQLAlchemy
+- PostgreSQL for Docker-based local development
+- SQLite fallback when `DATABASE_URL` is not set
+- Redis for auth token storage
+- Passlib / bcrypt password hashing
+- OpenAI API integration
+- Uvicorn
+
+### Frontend
+
+- React
+- Vite
+- JavaScript
+- CSS
+- Browser `fetch` for API calls
+
+### Dev / Infrastructure
+
+- Docker
+- Docker Compose
+- Environment-based configuration
+
+## API Endpoints
 
 ```text
 GET    /health
@@ -75,7 +80,76 @@ POST   /login
 GET    /protected
 ```
 
-## Run locally
+## Project Structure
+
+```text
+Lumina/
+├── backend/
+│   ├── app/
+│   │   ├── auth.py
+│   │   ├── cache.py
+│   │   ├── crud.py
+│   │   ├── database.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   └── services/
+│   │       └── openai_service.py
+│   └── requirements.txt
+├── frontend/
+│   ├── src/
+│   │   ├── App.jsx
+│   │   ├── api.js
+│   │   ├── main.jsx
+│   │   └── styles.css
+│   ├── package.json
+│   └── package-lock.json
+├── docker-compose.yml
+├── .env.example
+└── README.md
+```
+
+## Configuration
+
+Copy the example environment file and add values as needed:
+
+```bash
+cp .env.example .env
+```
+
+Supported environment variables:
+
+```text
+DATABASE_URL=postgresql://lumina_user:lumina_pass@postgres:5432/lumina_db
+REDIS_URL=redis://redis:6379/0
+OPENAI_API_KEY=your_openai_api_key
+VITE_API_URL=http://localhost:8000
+```
+
+`OPENAI_API_KEY` is optional for local exploration; without it, the AI endpoint returns a fallback response.
+
+## Run With Docker Compose
+
+```bash
+docker compose up --build
+```
+
+Then open:
+
+```text
+Frontend: http://localhost:5173
+Backend:  http://localhost:8000
+API docs: http://localhost:8000/docs
+```
+
+Docker Compose starts:
+
+- PostgreSQL on host port `5434`
+- Redis on host port `6379`
+- FastAPI backend on host port `8000`
+- Vite frontend on host port `5173`
+
+## Run Locally Without Docker
 
 ### Backend
 
@@ -87,11 +161,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-Default API URL:
-
-```text
-http://127.0.0.1:8000
-```
+If running without Docker, set `REDIS_URL` to a reachable Redis instance before using authenticated routes.
 
 ### Frontend
 
@@ -107,46 +177,28 @@ Optional frontend environment variable:
 VITE_API_URL=http://127.0.0.1:8000
 ```
 
-## Docker Compose
+## Technical Decisions
 
-```bash
-cp .env.example .env
-```
+- FastAPI provides a clear REST API surface and automatic OpenAPI docs.
+- SQLAlchemy keeps the database layer explicit while allowing PostgreSQL in Docker and SQLite for lightweight local development.
+- Redis stores login tokens separately from the relational data model.
+- Docker Compose makes the project easier to run as a complete backend/frontend/database/cache system.
+- The OpenAI integration is isolated in `backend/app/services/openai_service.py`, keeping external API logic out of route handlers.
 
-Add your OpenAI API key to `.env`:
+## What This Demonstrates
 
-```text
-OPENAI_API_KEY=your_key_here
-```
+- Full-stack application structure
+- REST API design and endpoint organization
+- Relational data modeling and CRUD operations
+- Authentication and protected route basics
+- Environment-based configuration
+- Dockerized local development
+- Practical integration with an external API
 
-Then run:
+## Next Improvements
 
-```bash
-docker compose up --build
-```
-
-## Configuration
-
-Supported backend environment variables include:
-
-```text
-DATABASE_URL
-OPENAI_API_KEY
-```
-
-If `DATABASE_URL` is not provided, the app can use a local SQLite database for development.
-
-## Why I built it
-
-Lumina is a practical full-stack project focused on connecting application UI, backend API design, relational data, authentication, and an external AI service in one working system.
-
-It is also a sandbox for improving backend architecture, API design, database handling, and frontend/backend integration.
-
-## Next improvements
-
-- Automated API tests with Pytest
-- End-to-end tests with Playwright
-- CI workflow with GitHub Actions
-- Improved authorization and session handling
-- Production deployment configuration
-- API documentation examples and screenshots
+- Add pytest coverage for API endpoints
+- Add Playwright end-to-end tests for the main workflow
+- Replace debug/local auth behavior with production-ready session settings
+- Add CI checks for backend and frontend
+- Improve frontend validation and error states
