@@ -72,7 +72,7 @@ def ask_question(topic_id: int, ask_in: schemas.AskRequest, db: Session = Depend
 
 @app.post("/register")
 def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = check_existing_user(db,email=user.email)
+    db_user = check_existing_user(db, email=user.email)
     if db_user:
         raise HTTPException(status_code=400, detail="Username already registered")
     return create_user(db=db, user=user)
@@ -82,21 +82,19 @@ def register_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 def login(creds: schemas.UserLogin, response: Response, db: Session = Depends(get_db)):
     user = authenticate_user(creds.email, creds.password, db)
     if user:
-        
         token = login_user(user.id)
-        print(f"Generated token for user {user.id}: {token}")  # Debug log
         response.set_cookie(
-        key="auth_token",
-        value=token,
-        httponly=True,  # Prevents JavaScript access (XSS protection)
-        secure=False,  # Send only over HTTPS (set False for local dev)
-        samesite="Strict"  # CSRF protection
-    )   
+            key="auth_token",
+            value=token,
+            httponly=True,
+            secure=False,
+            samesite="Strict",
+        )
         return {"message": "Login successful"}
-        
+
     return HTTPException(status_code=401, detail="Invalid credentials")
 
-@app.get('/protected')
-def protected(user=Depends(get_current_user)):
 
+@app.get("/protected")
+def protected(user=Depends(get_current_user)):
     return {"message": "This is a protected route"}
